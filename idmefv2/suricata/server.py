@@ -1,6 +1,8 @@
 import asyncio
 
 class EVEServer:
+    BUFFSIZE = 65536
+
     def __init__(self, sock_path: str, idmefv2_url: str):
         self.sock_path = sock_path
         self.idmefv2_url = idmefv2_url
@@ -9,7 +11,14 @@ class EVEServer:
         '''
             Handle an alert
         '''
+        b = await reader.read(self.BUFFSIZE)
+        print(b)
 
+        s = str(b).upper()
+        writer.write(s.encode())
+        await writer.drain()
+        writer.close()
+        await writer.wait_closed()
 
     async def start(self):
         '''
