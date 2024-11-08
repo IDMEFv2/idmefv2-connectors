@@ -45,6 +45,8 @@ class Converter(object):
         for k, v in self._compiled_template.items():
             if isinstance(v, jsonpath.JSONPath):
                 dest[k] = v.find(src)[0].value
+            elif callable(v):
+                dest[k] = v()
             else:
                 dest[k] = v
         return dest
