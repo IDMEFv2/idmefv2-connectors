@@ -1,7 +1,15 @@
 import uuid
+from .converter import Converter
 
-IDMEFV2_TEMPLATE = {
-    'Version': '2.0.3',
-    'ID': uuid.uuid4,
-    'CreateTime': '2021-11-26T16:30:12.313039',
-}
+def idmefv2_uuid():
+    return uuid.uuid4().urn[9:]
+
+class IDMEFv2Converter(Converter):
+    IDMEFV2_TEMPLATE = {
+        'Version': '2.0.3',
+        'ID': idmefv2_uuid,
+        'CreateTime': '$.timestamp',
+    }
+
+    def __init__(self):
+        super().__init__(IDMEFv2Converter.IDMEFV2_TEMPLATE)

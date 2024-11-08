@@ -1,5 +1,5 @@
 import unittest
-from idmefv2.suricata.converter import Converter
+from .converter import Converter
 
 def foobar():
     return 'FOOBAR'
