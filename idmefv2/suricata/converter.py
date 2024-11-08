@@ -16,7 +16,7 @@ class Converter(object):
         '''
         compiled_template = {}
         for k, v in template.items():
-            if isinstance(v, str) and v.startwith('$'):
+            if isinstance(v, str) and v.startswith('$'):
                 compiled_template[k] = jsonpath.parse(v)
             else:
                 compiled_template[k] = v
@@ -41,4 +41,10 @@ class Converter(object):
             Returns: converted JSON data
         '''
         # jsonpath.JSONPath
-        return {}
+        dest = {}
+        for k, v in self._compiled_template.items():
+            if isinstance(v, jsonpath.JSONPath):
+                dest[k] = v.find(src)[0].value
+            else:
+                dest[k] = v
+        return dest

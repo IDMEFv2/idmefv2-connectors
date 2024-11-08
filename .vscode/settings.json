@@ -2,7 +2,7 @@
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        ".",
+        "./idmefv2",
         "-p",
         "*_test.py"
     ],
