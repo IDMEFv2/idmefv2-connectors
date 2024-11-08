@@ -40,7 +40,6 @@ class Converter(object):
 
             Returns: converted JSON data
         '''
-        # jsonpath.JSONPath
         dest = {}
         for k, v in self._compiled_template.items():
             if isinstance(v, jsonpath.JSONPath):
