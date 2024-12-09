@@ -1,5 +1,5 @@
 import unittest
-from ..converter import Converter
+from idmefv2.connectors.jsonconverter import JSONConverter
 
 def foobar():
     return 'FOOBAR'
@@ -8,7 +8,7 @@ class TestConverter(unittest.TestCase):
 
     def test_raw(self):
         template = { 'foo': 'bar'}
-        converter = Converter(template)
+        converter = JSONConverter(template)
         i =  { 'a':  1}
         o = converter.convert(i)
         self.assertIsInstance(o, dict)
@@ -16,7 +16,7 @@ class TestConverter(unittest.TestCase):
 
     def test_path(self):
         template = { 'foo': '$.a'}
-        converter = Converter(template)
+        converter = JSONConverter(template)
         i =  { 'a':  1}
         o = converter.convert(i)
         self.assertIsInstance(o, dict)
@@ -24,7 +24,7 @@ class TestConverter(unittest.TestCase):
 
     def test_function(self):
         template = { 'foo': foobar}
-        converter = Converter(template)
+        converter = JSONConverter(template)
         i =  { 'a':  1}
         o = converter.convert(i)
         self.assertIsInstance(o, dict)

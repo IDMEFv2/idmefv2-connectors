@@ -1,10 +1,10 @@
 import uuid
-from ..converter import Converter
+from ..jsonconverter import JSONConverter
 
 def idmefv2_uuid():
     return uuid.uuid4().urn[9:]
 
-class IDMEFv2Converter(Converter):
+class IDMEFv2Converter(JSONConverter):
     IDMEFV2_TEMPLATE = {
         'Version': '2.0.3',
         'ID': idmefv2_uuid,

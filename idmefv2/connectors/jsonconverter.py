@@ -3,7 +3,7 @@
 '''
 import jsonpath_ng as jsonpath
 
-class Converter(object):
+class JSONConverter(object):
 
     @staticmethod
     def __compile_template(template: any):
@@ -29,7 +29,7 @@ class Converter(object):
             Parameters:
                 template(dict): the template of conversion output
         '''
-        self._compiled_template = Converter.__compile_template(template)
+        self._compiled_template = JSONConverter.__compile_template(template)
 
     def convert(self, src: dict) -> dict:
         '''

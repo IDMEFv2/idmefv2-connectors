@@ -2,7 +2,7 @@
 import asyncio
 import argparse
 import logging
-from idmefv2.suricata.server import EVEServer
+from idmefv2.connectors.suricata.server import EVEServer
 
 def parse_options():
     parser = argparse.ArgumentParser(description='Launch the EVE to IDMEFv2 conversion server')
