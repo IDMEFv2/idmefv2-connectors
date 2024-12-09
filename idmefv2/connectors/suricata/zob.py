@@ -1,5 +1,5 @@
 import unittest
-from .idmefv2_converter import IDMEFv2Converter
+from idmefv2.connectors.suricata.idmefv2_converter import IDMEFv2Converter
 
 class TestIDMEFv2Converter(unittest.TestCase):
 

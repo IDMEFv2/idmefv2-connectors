@@ -29,3 +29,11 @@ class TestConverter(unittest.TestCase):
         o = converter.convert(i)
         self.assertIsInstance(o, dict)
         self.assertEqual(o['foo'], 'FOOBAR')
+
+    def test_deep(self):
+        template = { 'foo': { 'bar': '$.a'}}
+        converter = JSONConverter(template)
+        i =  { 'a':  1}
+        o = converter.convert(i)
+        self.assertIsInstance(o, dict)
+        self.assertEqual(o['foo']['bar'], 1)

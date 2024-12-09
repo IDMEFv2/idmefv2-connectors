@@ -1,5 +1,5 @@
 import uuid
-from ..jsonconverter import JSONConverter
+from idmefv2.connectors.jsonconverter import JSONConverter
 
 def idmefv2_uuid():
     return uuid.uuid4().urn[9:]
