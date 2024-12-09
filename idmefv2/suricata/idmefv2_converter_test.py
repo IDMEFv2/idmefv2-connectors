@@ -1,9 +1,6 @@
 import unittest
 from .idmefv2_converter import IDMEFv2Converter
 
-def foobar():
-    return 'FOOBAR'
-
 class TestIDMEFv2Converter(unittest.TestCase):
 
     EVE_INPUT = {
