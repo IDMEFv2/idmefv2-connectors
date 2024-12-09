@@ -1,2 +1,4 @@
-# suricata-connector-idmefv2
-A Suricata NIDS to IDMEFv2 connector
+# idmefv2-connectors
+
+IDMEFv2 connectors for various probes and managers:
+- Suricata NIDS
