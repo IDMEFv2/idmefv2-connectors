@@ -1,5 +1,5 @@
 import unittest
-from .converter import Converter
+from ..converter import Converter
 
 def foobar():
     return 'FOOBAR'

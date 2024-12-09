@@ -1,5 +1,5 @@
 import uuid
-from .converter import Converter
+from ..converter import Converter
 
 def idmefv2_uuid():
     return uuid.uuid4().urn[9:]
