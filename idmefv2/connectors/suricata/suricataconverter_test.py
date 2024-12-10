@@ -1,7 +1,7 @@
 import unittest
-from idmefv2.connectors.suricata.idmefv2_converter import IDMEFv2Converter
+from idmefv2.connectors.suricata.suricataconverter import SuricataConverter
 
-class TestIDMEFv2Converter(unittest.TestCase):
+class TestSuricataConverter(unittest.TestCase):
 
     EVE_INPUT = {
         "timestamp": "2017-04-07T22:24:37.251547+0100",
@@ -32,7 +32,13 @@ class TestIDMEFv2Converter(unittest.TestCase):
     }
 
     def test_1(self):
-        converter = IDMEFv2Converter()
+        converter = SuricataConverter()
         o = converter.convert(self.EVE_INPUT)
         self.assertIsInstance(o, dict)
         self.assertEqual(o['Version'], '2.0.3')
+
+    def test_2(self):
+        converter = SuricataConverter()
+        o = converter.convert(self.EVE_INPUT)
+        self.assertIsInstance(o, dict)
+        self.assertEqual(o['Source']['Protocol'], 'TCP')
