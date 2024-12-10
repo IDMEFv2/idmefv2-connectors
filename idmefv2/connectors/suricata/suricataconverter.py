@@ -4,7 +4,7 @@ from idmefv2.connectors.jsonconverter import JSONConverter
 def idmefv2_uuid():
     return uuid.uuid4().urn[9:]
 
-class IDMEFv2Converter(JSONConverter):
+class SuricataConverter(JSONConverter):
     IDMEFV2_TEMPLATE = {
         'Version': '2.0.3',
         'ID': idmefv2_uuid,
@@ -37,4 +37,4 @@ class IDMEFv2Converter(JSONConverter):
     }
 
     def __init__(self):
-        super().__init__(IDMEFv2Converter.IDMEFV2_TEMPLATE)
+        super().__init__(SuricataConverter.IDMEFV2_TEMPLATE)
