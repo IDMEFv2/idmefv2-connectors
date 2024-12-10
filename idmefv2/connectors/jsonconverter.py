@@ -14,13 +14,15 @@ class JSONConverter(object):
                 template(dict): the template of conversion output
             Returns: the compiled template
         '''
-        compiled_template = {}
-        for k, v in template.items():
-            if isinstance(v, str) and v.startswith('$'):
-                compiled_template[k] = jsonpath.parse(v)
-            else:
-                compiled_template[k] = v
-        return compiled_template
+        if isinstance(template, str) and template.startswith('$'):
+            return jsonpath.parse(template)
+        if isinstance(template, dict):
+            c = {k: JSONConverter.__compile_template(v) for (k, v) in template.items()}
+            return c
+        if isinstance(template, list):
+            c = [JSONConverter.__compile_template(v) for v in template]
+            return c
+        return template
 
     def __init__(self, template: dict):
         '''
@@ -31,6 +33,22 @@ class JSONConverter(object):
         '''
         self._compiled_template = JSONConverter.__compile_template(template)
 
+    @staticmethod
+    def __convert(template: any, src: dict) -> any:
+        if isinstance(template, jsonpath.JSONPath):
+            return template.find(src)[0].value
+        if isinstance(template, str):
+            return template
+        if callable(template):
+            return template()
+        if isinstance(template, dict):
+            ret = {k: JSONConverter.__convert(v, src) for (k, v) in template.items()}
+            return ret
+        if isinstance(template, list):
+            ret = [JSONConverter.__convert(v, src) for v in template]
+            return ret
+        return None
+
     def convert(self, src: dict) -> dict:
         '''
             Convert JSON data to another JSON data
@@ -40,12 +58,4 @@ class JSONConverter(object):
 
             Returns: converted JSON data
         '''
-        dest = {}
-        for k, v in self._compiled_template.items():
-            if isinstance(v, jsonpath.JSONPath):
-                dest[k] = v.find(src)[0].value
-            elif callable(v):
-                dest[k] = v()
-            else:
-                dest[k] = v
-        return dest
+        return JSONConverter.__convert(self._compiled_template, src)
