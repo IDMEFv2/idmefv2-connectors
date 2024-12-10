@@ -40,7 +40,7 @@ class EVEServer:
         writer.close()
         await writer.wait_closed()
 
-    async def start(self):
+    async def _loop(self):
         '''
             Start the server listening on Unix socket specified in constructor.
         '''
@@ -53,3 +53,6 @@ class EVEServer:
         await server.serve_forever()
         await self.session.close()
         logging.info('Server closed')
+
+    def start(self):
+        asyncio.run(self._loop())
