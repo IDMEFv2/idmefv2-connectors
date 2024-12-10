@@ -6,6 +6,7 @@ import json
 import logging
 import textwrap
 import aiohttp
+from idmefv2.connectors.suricata.suricataconverter import SuricataConverter
 
 class EVEServer:
     '''
@@ -24,6 +25,7 @@ class EVEServer:
         self.socket_path = socket_path
         self.idmefv2_url = idmefv2_url
         self.session = None
+        self.converter = SuricataConverter()
 
     async def handle_alert(self, reader, writer):
         '''
@@ -33,9 +35,10 @@ class EVEServer:
 
         logging.debug("received alert %s", textwrap.shorten(str(b), 128))
 
-        alert = json.loads(b)
+        eve_alert = json.loads(b)
+        idmefv2_alert = self.converter.convert(eve_alert)
 
-        await self.session.post(self.idmefv2_url, json=alert)
+        await self.session.post(self.idmefv2_url, json=idmefv2_alert)
 
         writer.close()
         await writer.wait_closed()
