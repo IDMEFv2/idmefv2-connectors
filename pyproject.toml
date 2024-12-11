@@ -1,0 +1,17 @@
+[project]
+name = "idmefv2-connectors"
+version = "0.0.1"
+dependencies = [
+    "jsonpath_ng",
+    'aiohttp',
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+mypkg = ["*.conf.sample"]

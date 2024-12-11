@@ -4,8 +4,8 @@
 level = INFO
 
 [suricata]
-eve=unixsocket
-unixsocket=/var/tmp/suricata.sock
+eve = unixsocket
+unixsocket = /var/tmp/suricata.sock
 
 [idmefv2]
 url = http://127.0.0.1:8888
