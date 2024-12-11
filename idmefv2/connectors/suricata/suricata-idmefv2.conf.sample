@@ -1,7 +1,7 @@
 [logging]
-# Logging level: change to DEBUG for more information
-# level = DEBUG
-level = INFO
+# Logging level: change to DEBUG for more information, INFO for less information
+level = DEBUG
+# level = INFO
 
 [suricata]
 eve = unixsocket
