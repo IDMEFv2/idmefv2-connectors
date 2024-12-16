@@ -6,7 +6,7 @@ def idmefv2_uuid():
 
 class SuricataConverter(JSONConverter):
     IDMEFV2_TEMPLATE = {
-        'Version': '2.0.3',
+        'Version': '2.D.V04',
         'ID': idmefv2_uuid,
         'CreateTime': '$.timestamp',
         'Description' : '$.alert.category',
@@ -25,15 +25,25 @@ class SuricataConverter(JSONConverter):
                 "Signature"
             ]
         },
-        'Source': {
-            'IP': '$.src_ip',
-            'Port': '$.src_port',
-            'Protocol': '$.proto',
-        },
-        'Target': {
-            'IP': '$.dest_ip',
-            'Port': '$.dest_port',
-        },
+        'Source': [
+            {
+                'IP': '$.src_ip',
+                'Port': [
+                    '$.src_port',
+                ],
+                'Protocol': [
+                    '$.proto',
+                ],
+            },
+        ],
+        'Target': [
+            {
+                'IP': '$.dest_ip',
+                'Port': [
+                    '$.dest_port',
+                ],
+            },
+        ],
     }
 
     def __init__(self):
