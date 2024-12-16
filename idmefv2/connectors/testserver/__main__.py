@@ -35,7 +35,7 @@ class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
             logging.error(e.message)
             status = 500
             response_data = e.message
-        self._response(status, response_data)
+        self._response(status, response_data + '\n')
 
 def parse_options():
     parser = argparse.ArgumentParser(description='Run a HTTP server validating IDMEFv2 messages')
