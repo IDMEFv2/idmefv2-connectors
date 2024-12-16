@@ -1,7 +1,6 @@
 import argparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
-import sys
 import jsonschema
 import idmefv2
 
