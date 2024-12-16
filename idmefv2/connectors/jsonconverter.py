@@ -22,6 +22,9 @@ class JSONConverter(object):
         if isinstance(template, list):
             c = [JSONConverter.__compile_template(v) for v in template]
             return c
+        if isinstance(template, tuple):
+            c = tuple(JSONConverter.__compile_template(v) for v in template)
+            return c
         return template
 
     def __init__(self, template: dict):
@@ -34,13 +37,31 @@ class JSONConverter(object):
         self._compiled_template = JSONConverter.__compile_template(template)
 
     @staticmethod
+    def __is_call(t: any) -> bool:
+        if callable(t):
+            return True
+        if isinstance(t, tuple) and len(t) >= 2 and callable(t[0]):
+            return True
+        return False
+
+    @staticmethod
+    def __call(t: any, src) -> bool:
+        if callable(t):
+            return t()
+        if isinstance(t, tuple) and len(t) >= 2 and callable(t[0]):
+            fun = t[0]
+            args = tuple(JSONConverter.__convert(v, src) for v in t[1:])
+            return fun(*args)
+        return False
+
+    @staticmethod
     def __convert(template: any, src: dict) -> any:
         if isinstance(template, jsonpath.JSONPath):
             return template.find(src)[0].value
         if isinstance(template, str):
             return template
-        if callable(template):
-            return template()
+        if JSONConverter.__is_call(template):
+            return JSONConverter.__call(template, src)
         if isinstance(template, dict):
             ret = {k: JSONConverter.__convert(v, src) for (k, v) in template.items()}
             return ret

@@ -4,6 +4,9 @@ from idmefv2.connectors.jsonconverter import JSONConverter
 def foobar():
     return 'FOOBAR'
 
+def conv_datetime(dt):
+    return dt + '_FOO'
+
 class TestConverter(unittest.TestCase):
 
     def test_raw(self):
@@ -46,3 +49,11 @@ class TestConverter(unittest.TestCase):
         self.assertIsInstance(o, dict)
         self.assertEqual(o['foo'][0], 'bar')
         self.assertEqual(o['foo'][1], 'FOOBAR')
+
+    def test_function_2(self):
+        template = { 'foo': (conv_datetime, '$.timestamp')}
+        converter = JSONConverter(template)
+        i =  { 'timestamp':  'AAA'}
+        o = converter.convert(i)
+        self.assertIsInstance(o, dict)
+        self.assertEqual(o['foo'], 'AAA_FOO')
