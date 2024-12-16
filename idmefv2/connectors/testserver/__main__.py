@@ -33,8 +33,8 @@ class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
         except jsonschema.exceptions.ValidationError as e:
             logging.error(e.message)
             status = 500
-            response_data = e.message
-        self._response(status, response_data + '\n')
+            response_data = e.message + '\n'
+        self._response(status, response_data)
 
 def parse_options():
     parser = argparse.ArgumentParser(description='Run a HTTP server validating IDMEFv2 messages')
