@@ -23,7 +23,7 @@ class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
-        logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
+        logging.info("POST request\nPath: %s\nHeaders:\n%s\nBody:\n%s\n",
                 str(self.path), str(self.headers), post_data.decode('utf-8'))
         status = 200
         response_data = None
