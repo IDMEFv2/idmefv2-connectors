@@ -1,14 +1,19 @@
+import datetime
 import uuid
 from idmefv2.connectors.jsonconverter import JSONConverter
 
 def idmefv2_uuid():
     return uuid.uuid4().urn[9:]
 
+def convert_timestamp(ts):
+     i = datetime.datetime.fromisoformat(ts)
+     return i.isoformat()
+
 class SuricataConverter(JSONConverter):
     IDMEFV2_TEMPLATE = {
         'Version': '2.D.V04',
         'ID': idmefv2_uuid,
-        'CreateTime': '$.timestamp',
+        'CreateTime': (convert_timestamp, '$.timestamp'),
         'Description' : '$.alert.category',
         "Analyzer": {
             "IP": "127.0.0.1",
