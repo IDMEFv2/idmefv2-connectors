@@ -36,9 +36,10 @@ class EVEServer:
         logging.debug("received alert %s", textwrap.shorten(str(b), 128))
 
         eve_alert = json.loads(b)
-        idmefv2_alert = self.converter.convert(eve_alert)
+        (converted, idmefv2_alert) = self.converter.convert(eve_alert)
 
-        await self.session.post(self.idmefv2_url, json=idmefv2_alert)
+        if converted:
+            await self.session.post(self.idmefv2_url, json=idmefv2_alert)
 
         writer.close()
         await writer.wait_closed()
