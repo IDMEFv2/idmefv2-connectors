@@ -48,11 +48,10 @@ class JSONConverter(object):
     def __call(t: any, src) -> bool:
         if callable(t):
             return t()
-        if isinstance(t, tuple) and len(t) >= 2 and callable(t[0]):
-            fun = t[0]
-            args = tuple(JSONConverter.__convert(v, src) for v in t[1:])
-            return fun(*args)
-        return False
+        # isinstance(t, tuple) and len(t) >= 2 and callable(t[0]) is True
+        fun = t[0]
+        args = tuple(JSONConverter.__convert(v, src) for v in t[1:])
+        return fun(*args)
 
     @staticmethod
     def __convert(template: any, src: dict) -> any:
@@ -70,13 +69,25 @@ class JSONConverter(object):
             return ret
         return None
 
-    def convert(self, src: dict) -> dict:
+    def filter(self, src: dict) -> bool:
+        '''
+            Filters JSON objects that must not be converted
+
+            Sub-classes can overload this method
+
+            Returns: True if JSON object must be converted
+        '''
+        return True
+
+    def convert(self, src: dict) -> (bool, dict):
         '''
             Convert JSON data to another JSON data
 
             Parameters:
                 src(dict): JSON data, as a dictionary
 
-            Returns: converted JSON data
+            Returns: a tuple containing (True, converted JSON) if converted, (False, src) if not
         '''
-        return JSONConverter.__convert(self._compiled_template, src)
+        if self.filter(src):
+            return (True, JSONConverter.__convert(self._compiled_template, src))
+        return (False, src)
