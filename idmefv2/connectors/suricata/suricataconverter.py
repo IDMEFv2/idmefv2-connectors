@@ -6,8 +6,8 @@ def idmefv2_uuid():
     return uuid.uuid4().urn[9:]
 
 def convert_timestamp(ts):
-     i = datetime.datetime.fromisoformat(ts)
-     return i.isoformat()
+    i = datetime.datetime.fromisoformat(ts)
+    return i.isoformat()
 
 class SuricataConverter(JSONConverter):
     IDMEFV2_TEMPLATE = {
@@ -53,3 +53,6 @@ class SuricataConverter(JSONConverter):
 
     def __init__(self):
         super().__init__(SuricataConverter.IDMEFV2_TEMPLATE)
+
+    def filter(self, src: dict) -> bool:
+        return 'event_type' in src and src['event_type'] == 'alert'
