@@ -65,4 +65,7 @@ class SuricataConverter(JSONConverter):
         super().__init__(SuricataConverter.IDMEFV2_TEMPLATE)
 
     def filter(self, src: dict) -> bool:
-        return 'event_type' in src and src['event_type'] == 'alert'
+        return ('event_type' in src
+                and src['event_type'] == 'alert'
+                and 'category' in src['alert']
+                and src['alert']['category'] != 'Generic Protocol Command Decode')
