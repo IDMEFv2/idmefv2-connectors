@@ -14,4 +14,4 @@ build-backend = "setuptools.build_meta"
 include-package-data = true
 
 [tool.setuptools.package-data]
-'idmefv2.connectors.suricata' = ["*.conf.sample"]
+'idmefv2.connectors.suricata' = ["*.sample.conf"]
