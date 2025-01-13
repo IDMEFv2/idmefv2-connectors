@@ -9,6 +9,16 @@ def convert_timestamp(ts):
     i = datetime.datetime.fromisoformat(ts)
     return i.isoformat()
 
+def fix_ip(ip):
+    if ip != '':
+        return ip
+    return '127.0.0.1'
+
+def fix_protocol(proto):
+    if proto != '':
+        return proto
+    return 'UNKNOWN'
+
 class SuricataConverter(JSONConverter):
     IDMEFV2_TEMPLATE = {
         'Version': '2.D.V04',
@@ -32,18 +42,18 @@ class SuricataConverter(JSONConverter):
         },
         'Source': [
             {
-                'IP': '$.src_ip',
+                'IP': (fix_ip, '$.src_ip'),
                 'Port': [
                     '$.src_port',
                 ],
                 'Protocol': [
-                    '$.proto',
+                    (fix_protocol,'$.proto'),
                 ],
             },
         ],
         'Target': [
             {
-                'IP': '$.dest_ip',
+                'IP': (fix_ip, '$.dest_ip'),
                 'Port': [
                     '$.dest_port',
                 ],
