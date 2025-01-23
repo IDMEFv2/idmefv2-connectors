@@ -1,62 +1,76 @@
 '''
     The Unix socket server listening for EVE alerts
 '''
-import asyncio
+import abc
 import json
 import logging
-import textwrap
-import aiohttp
+import socketserver
+from typing import Union
+import requests
 from idmefv2.connectors.suricata.suricataconverter import SuricataConverter
 
-class EVEServer:
+class EVEServer(abc.ABC):
     '''
-        A class implementing an asyncio server listening on a Unix socket for EVE alerts.
+        Base class for servers receiving EVE alerts
         On receiving an alert, convert it to IDMEFv2 and send it to a IDMEFv2 HTTPS server
     '''
-    BUFFSIZE = 65536
-
-    def __init__(self, socket_path: str, idmefv2_url: str):
-        '''
-
-            Parameters:
-                socket_path(str): path to the Unix socket
-                idmefv2_url(str): the url of the IDMEFv2 HTTPS server
-        '''
-        self.socket_path = socket_path
-        self.idmefv2_url = idmefv2_url
-        self.session = None
+    def __init__(self, *, url: str):
+        self.idmefv2_url = url
         self.converter = SuricataConverter()
 
-    async def handle_alert(self, reader, writer):
-        '''
-            Handle an alert
-        '''
-        b = await reader.read(self.BUFFSIZE)
-
-        logging.debug("received alert %s", textwrap.shorten(str(b), 128))
-
+    def alert(self, b: Union[str,bytes]):
         eve_alert = json.loads(b)
         (converted, idmefv2_alert) = self.converter.convert(eve_alert)
 
         if converted:
-            await self.session.post(self.idmefv2_url, json=idmefv2_alert)
+            requests.post(self.idmefv2_url, json=idmefv2_alert, timeout=1.0)
 
-        writer.close()
-        await writer.wait_closed()
+    @abc.abstractmethod
+    def run(self):
+        raise NotImplementedError
 
-    async def _loop(self):
+class EVEStreamRequestHandler(socketserver.StreamRequestHandler):
+    def handle(self):
+        data = self.rfile.readline().strip()
+        logging.debug("received data %s", str(data))
+        self.server.eve_server.alert(data)
+
+class EVEUnixStreamServer(socketserver.UnixStreamServer):
+    def __init__(self, eve_socket_server):
+        super().__init__(eve_socket_server.socket_path, EVEStreamRequestHandler)
+        self.eve_server = eve_socket_server
+
+class EVESocketServer(EVEServer):
+    '''
+        A class implementing a server listening on a Unix socket for EVE alerts.
+    '''
+    def __init__(self, *, url: str, path: str):
+        '''
+            Parameters:
+                path(str): path to the Unix socket
+                url(str): the url of the IDMEFv2 HTTPS server
+        '''
+        super().__init__(url=url)
+        self.socket_path = path
+
+    def run(self):
         '''
             Start the server listening on Unix socket specified in constructor.
         '''
-        server = await asyncio.start_unix_server(self.handle_alert, self.socket_path)
+        with EVEUnixStreamServer(self) as server:
+            logging.info("Listening on Unix socket %s", self.socket_path)
+            server.serve_forever()
 
-        self.session = aiohttp.ClientSession()
-
-        logging.info("Listening on Unix socket %s", self.socket_path)
-
-        await server.serve_forever()
-        await self.session.close()
         logging.info('Server closed')
 
-    def start(self):
-        asyncio.run(self._loop())
+class EVEFileServer(EVEServer):
+    '''
+        A class implementing an asyncio server "tailing" a log file for EVE alerts.
+    '''
+    def __init__(self, *, url: str, path: str):
+        super().__init__(url=url)
+        self.file_path = path
+
+    def run(self):
+        while True:
+            pass

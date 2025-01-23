@@ -1,8 +1,9 @@
 
 import argparse
 import logging
-from idmefv2.connectors.suricata.eveserver import EVEServer
+import sys
 from configparser import ConfigParser
+from idmefv2.connectors.suricata.eveserver import EVESocketServer, EVEFileServer
 
 class Configuration(ConfigParser):
     def __init__(self, filename):
@@ -22,10 +23,22 @@ def main():
     level = config.get('logging', 'level', fallback='INFO')
     logging.basicConfig(level=level)
 
-    socket_path = config.get('suricata', 'unixsocket')
     idmefv2_url = config.get('idmefv2', 'url')
-    server = EVEServer(socket_path, idmefv2_url)
-    server.start()
+
+    server = None
+    eve_output = config.get('suricata', 'eve')
+    if eve_output == 'unix_stream':
+        socket_path = config.get('suricata', 'unixsocket')
+        server = EVESocketServer(url = idmefv2_url, path = socket_path)
+    elif eve_output == 'regular':
+        filename = config.get('suricata', filename)
+        server = EVEFileServer(url = idmefv2_url, path = filename)
+
+    if server is None:
+        print('configuration option suricata.eve must be one of [unix_stream, regular]', file=sys.stderr)
+        sys.exit(1)
+
+    server.run()
 
 if __name__ == '__main__':
     main()
