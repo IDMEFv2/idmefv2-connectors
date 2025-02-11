@@ -2,8 +2,10 @@
 name = "idmefv2-connectors"
 version = "0.0.1"
 dependencies = [
+    'inotify',
     "jsonpath_ng",
-    'aiohttp',
+    'pyyaml',
+    'requests',
 ]
 
 [build-system]
