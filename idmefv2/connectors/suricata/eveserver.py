@@ -4,7 +4,9 @@
 import abc
 import json
 import logging
+import os
 import socketserver
+import time
 from typing import Union
 import requests
 import inotify.adapters
@@ -74,7 +76,18 @@ class EVEFileServer(EVEServer):
         super().__init__(url=url)
         self.file_path = path
 
+    def _wait_for_file(self):
+        count = 0
+        max_retries = 20
+        while count < max_retries:
+            if os.path.isfile(self.file_path) and os.access(self.file_path, os.R_OK):
+                return
+            time.sleep(5)
+        log.error("cannot read file %s", self.file_path)
+
     def run(self):
+        self._wait_for_file()
+
         i = inotify.adapters.Inotify()
         i.add_watch(self.file_path, mask=inotify.constants.IN_MODIFY)
 
@@ -82,5 +95,7 @@ class EVEFileServer(EVEServer):
             fd.seek(0, 2)
             log.info("Tailing from file %s", self.file_path)
             for event in i.event_gen(yield_nones=False):
-                line = fd.readline().strip()
-                super().alert(line)
+                log.debug("got inotify event %s", str(event))
+                data = fd.readline().strip()
+                log.debug("received data %s", str(data))
+                super().alert(data)
