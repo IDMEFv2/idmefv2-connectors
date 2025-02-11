@@ -7,6 +7,7 @@ import logging
 import socketserver
 from typing import Union
 import requests
+import inotify.adapters
 from idmefv2.connectors.suricata.suricataconverter import SuricataConverter
 
 class EVEServer(abc.ABC):
@@ -72,5 +73,12 @@ class EVEFileServer(EVEServer):
         self.file_path = path
 
     def run(self):
-        while True:
-            pass
+        i = inotify.adapters.Inotify()
+        i.add_watch(self.file_path, mask=inotify.constants.IN_MODIFY)
+
+        with open(self.file_path) as fd:
+            fd.seek(0, 2)
+            logging.info("Tailing from file %s", self.file_path)
+            for event in i.event_gen(yield_nones=False):
+                line = fd.readline().strip()
+                super().alert(line)
