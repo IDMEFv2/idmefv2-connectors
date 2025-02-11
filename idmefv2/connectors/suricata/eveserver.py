@@ -28,7 +28,9 @@ class EVEServer(abc.ABC):
         (converted, idmefv2_alert) = self.converter.convert(eve_alert)
 
         if converted:
-            requests.post(self.idmefv2_url, json=idmefv2_alert, timeout=1.0)
+            log.info("sending IDMEFv2 alert %s", str(idmefv2_alert))
+            r = requests.post(self.idmefv2_url, json=idmefv2_alert, timeout=1.0)
+            log.debug("got response %s", r)
 
     @abc.abstractmethod
     def run(self):
@@ -70,7 +72,7 @@ class EVESocketServer(EVEServer):
 
 class EVEFileServer(EVEServer):
     '''
-        A class implementing an asyncio server "tailing" a log file for EVE alerts.
+        A class implementing a server "tailing" a log file for EVE alerts.
     '''
     def __init__(self, *, url: str, path: str):
         super().__init__(url=url)
@@ -84,6 +86,7 @@ class EVEFileServer(EVEServer):
                 return
             time.sleep(5)
         log.error("cannot read file %s", self.file_path)
+        sys.exit()
 
     def run(self):
         self._wait_for_file()

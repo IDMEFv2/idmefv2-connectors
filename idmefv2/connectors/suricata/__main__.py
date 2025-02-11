@@ -45,8 +45,9 @@ def main():
 
     filetype, filename = eve_output
 
-    if filetype not in ['unix_stream', 'regular']:
-        log.error("configuration option suricata.eve must be one of ['unix_stream', 'regular']")
+    accepted_filetypes = ['unix_stream', 'regular']
+    if filetype not in accepted_filetypes:
+        log.error("configuration option suricata.eve must be one of %s", accepted_filetypes)
         sys.exit(1)
 
     server = None
