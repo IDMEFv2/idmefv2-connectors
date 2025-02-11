@@ -25,8 +25,7 @@ def find_eve_output(filename):
         el= r[0]['eve-log']
         if el['enabled']:
             return (el['filetype'], el['filename'])
-    logging.error('error loading Suricata config file')
-    sys.exit(1)
+    return None
 
 def main():
     options = parse_options()
@@ -34,14 +33,20 @@ def main():
 
     level = config.get('logging', 'level', fallback='INFO')
     logging.basicConfig(level=level)
+    log = logging.getLogger('suricata-connector')
 
     idmefv2_url = config.get('idmefv2', 'url')
 
     suricata_config = config.get('suricata', 'config')
-    filetype, filename = find_eve_output(suricata_config)
+    eve_output = find_eve_output(suricata_config)
+    if eve_output is None:
+        log.error('error loading Suricata config file')
+        sys.exit(1)
+
+    filetype, filename = eve_output
 
     if filetype not in ['unix_stream', 'regular']:
-        logging.error("configuration option suricata.eve must be one of ['unix_stream', 'regular']")
+        log.error("configuration option suricata.eve must be one of ['unix_stream', 'regular']")
         sys.exit(1)
 
     server = None

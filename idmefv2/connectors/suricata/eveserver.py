@@ -10,6 +10,8 @@ import requests
 import inotify.adapters
 from idmefv2.connectors.suricata.suricataconverter import SuricataConverter
 
+log = logging.getLogger('suricata-connector')
+
 class EVEServer(abc.ABC):
     '''
         Base class for servers receiving EVE alerts
@@ -33,7 +35,7 @@ class EVEServer(abc.ABC):
 class EVEStreamRequestHandler(socketserver.StreamRequestHandler):
     def handle(self):
         data = self.rfile.readline().strip()
-        logging.debug("received data %s", str(data))
+        log.debug("received data %s", str(data))
         self.server.eve_server.alert(data)
 
 class EVEUnixStreamServer(socketserver.UnixStreamServer):
@@ -59,7 +61,7 @@ class EVESocketServer(EVEServer):
             Start the server listening on Unix socket specified in constructor.
         '''
         with EVEUnixStreamServer(self) as server:
-            logging.info("Listening on Unix socket %s", self.socket_path)
+            log.info("Listening on Unix socket %s", self.socket_path)
             server.serve_forever()
 
         logging.info('Server closed')
@@ -78,7 +80,7 @@ class EVEFileServer(EVEServer):
 
         with open(self.file_path) as fd:
             fd.seek(0, 2)
-            logging.info("Tailing from file %s", self.file_path)
+            log.info("Tailing from file %s", self.file_path)
             for event in i.event_gen(yield_nones=False):
                 line = fd.readline().strip()
                 super().alert(line)
