@@ -9,6 +9,7 @@ import socketserver
 import time
 from typing import Union
 import requests
+import sys
 import inotify.adapters
 from idmefv2.connectors.suricata.suricataconverter import SuricataConverter
 
@@ -84,9 +85,10 @@ class EVEFileServer(EVEServer):
         while count < max_retries:
             if os.path.isfile(self.file_path) and os.access(self.file_path, os.R_OK):
                 return
+            count += 1
             time.sleep(5)
         log.error("cannot read file %s", self.file_path)
-        sys.exit()
+        sys.exit(1)
 
     def run(self):
         self._wait_for_file()
