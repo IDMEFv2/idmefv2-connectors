@@ -10,7 +10,7 @@ import time
 from typing import Union
 import requests
 import sys
-import inotify.adapters
+from idmefv2.connectors.filetailer import FileTailer
 from idmefv2.connectors.suricata.suricataconverter import SuricataConverter
 
 log = logging.getLogger('suricata-connector')
@@ -93,14 +93,9 @@ class EVEFileServer(EVEServer):
     def run(self):
         self._wait_for_file()
 
-        i = inotify.adapters.Inotify()
-        i.add_watch(self.file_path, mask=inotify.constants.IN_MODIFY)
+        log.info("Tailing from file %s", self.file_path)
 
-        with open(self.file_path) as fd:
-            fd.seek(0, 2)
-            log.info("Tailing from file %s", self.file_path)
-            for event in i.event_gen(yield_nones=False):
-                log.debug("got inotify event %s", str(event))
-                data = fd.readline().strip()
-                log.debug("received data %s", str(data))
-                super().alert(data)
+        ft = FileTailer(self.file_path)
+        for line in ft.tail():
+            log.debug("received %s", str(line))
+            super().alert(line)
