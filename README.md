@@ -4,4 +4,4 @@ This repository contains Python implementations of IDMEFv2 connectors for variou
 - [Suricata NIDS](./idmefv2/connectors/suricata)
 
 
-A HTTP test server is also available in ./idmefv2/connectors/testserver
+A HTTP test server is also available in [./idmefv2/connectors/testserver](./idmefv2/connectors/testserver)
