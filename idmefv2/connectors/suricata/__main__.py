@@ -39,7 +39,7 @@ def main():
     idmefv2_url = config.get('idmefv2', 'url')
     idmefv2_login = config.get('idmefv2', 'login', fallback=None)
     idmefv2_password = config.get('idmefv2', 'password', fallback=None)
-    idmefv2_client = IDMEFv2Client(url=idmefv2_url, login=idmefv2_login, passwd=idmefv2_password)
+    idmefv2_client = IDMEFv2Client(url=idmefv2_url, login=idmefv2_login, password=idmefv2_password)
 
     suricata_config = config.get('suricata', 'config')
     eve_output = find_eve_output(suricata_config)
