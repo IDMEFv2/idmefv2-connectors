@@ -9,21 +9,30 @@ def convert_timestamp(ts):
     i = datetime.datetime.fromisoformat(ts)
     return i.isoformat()
 
+def convert_severity(severity):
+    if severity <= 0:
+        return 'Unknown'
+    if severity > 4:
+        return 'High'
+    return {1:'Info', 2:'Low', 3:'Medium', 4:'High'}[severity]
+
 def fix_ip(ip):
-    if ip != '':
-        return ip
-    return '127.0.0.1'
+    if ip == '':
+        return '127.0.0.1'
+    return ip
 
 def fix_protocol(proto):
-    if proto != '':
-        return proto
-    return 'UNKNOWN'
+    if proto == '':
+        return 'UNKNOWN'
+    return proto
 
 class SuricataConverter(JSONConverter):
     IDMEFV2_TEMPLATE = {
         'Version': '2.D.V04',
         'ID': idmefv2_uuid,
         'CreateTime': (convert_timestamp, '$.timestamp'),
+        'Category': 'Recon.Scanning',
+        'Priority': (convert_severity, '$.alert.severity'),
         'Description' : '$.alert.category',
         "Analyzer": {
             "IP": "127.0.0.1",

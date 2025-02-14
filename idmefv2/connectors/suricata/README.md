@@ -40,3 +40,11 @@ The `idmefv2.connectors.suricata` Python module can be run directly. The only ma
 ```
 python3 -m idmefv2.connectors.suricata -c /etc/suricata-idmefv2.conf
 ```
+
+## Testing
+
+Run:
+
+```
+curl http://testmynids.org/uid/index.html
+```
