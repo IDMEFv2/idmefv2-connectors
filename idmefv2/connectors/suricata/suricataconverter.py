@@ -31,7 +31,7 @@ class SuricataConverter(JSONConverter):
         'Version': '2.D.V04',
         'ID': idmefv2_uuid,
         'CreateTime': (convert_timestamp, '$.timestamp'),
-        'Category': 'Recon.Scanning',
+        'Category': ['Recon.Scanning'],
         'Priority': (convert_severity, '$.alert.severity'),
         'Description' : '$.alert.category',
         "Analyzer": {
