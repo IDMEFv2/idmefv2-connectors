@@ -12,6 +12,7 @@ import requests
 import sys
 from idmefv2.connectors.filetailer import FileTailer
 from idmefv2.connectors.suricata.suricataconverter import SuricataConverter
+from idmefv2.connectors.idmefv2client import IDMEFv2Client
 
 log = logging.getLogger('suricata-connector')
 
@@ -20,8 +21,8 @@ class EVEServer(abc.ABC):
         Base class for servers receiving EVE alerts
         On receiving an alert, convert it to IDMEFv2 and send it to a IDMEFv2 HTTPS server
     '''
-    def __init__(self, *, url: str):
-        self.idmefv2_url = url
+    def __init__(self, idmefv2_client: IDMEFv2Client):
+        self.idmefv2_client = idmefv2_client
         self.converter = SuricataConverter()
 
     def alert(self, b: Union[str,bytes]):
@@ -29,9 +30,7 @@ class EVEServer(abc.ABC):
         (converted, idmefv2_alert) = self.converter.convert(eve_alert)
 
         if converted:
-            log.info("sending IDMEFv2 alert %s", str(idmefv2_alert))
-            r = requests.post(self.idmefv2_url, json=idmefv2_alert, timeout=1.0)
-            log.debug("got response %s", r)
+            self.idmefv2_client.post(idmefv2_alert)
 
     @abc.abstractmethod
     def run(self):
@@ -52,13 +51,13 @@ class EVESocketServer(EVEServer):
     '''
         A class implementing a server listening on a Unix socket for EVE alerts.
     '''
-    def __init__(self, *, url: str, path: str):
+    def __init__(self, idmefv2_client: IDMEFv2Client, path: str):
         '''
             Parameters:
                 path(str): path to the Unix socket
                 url(str): the url of the IDMEFv2 HTTPS server
         '''
-        super().__init__(url=url)
+        super().__init__(idmefv2_client)
         self.socket_path = path
 
     def run(self):
@@ -75,8 +74,8 @@ class EVEFileServer(EVEServer):
     '''
         A class implementing a server "tailing" a log file for EVE alerts.
     '''
-    def __init__(self, *, url: str, path: str):
-        super().__init__(url=url)
+    def __init__(self, idmefv2_client: IDMEFv2Client, path: str):
+        super().__init__(idmefv2_client)
         self.file_path = path
 
     def _wait_for_file(self):

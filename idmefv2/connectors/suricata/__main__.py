@@ -5,6 +5,7 @@ import sys
 from configparser import ConfigParser
 import yaml
 from idmefv2.connectors.suricata.eveserver import EVESocketServer, EVEFileServer
+from idmefv2.connectors.idmefv2client import IDMEFv2Client
 
 class Configuration(ConfigParser):
     def __init__(self, filename):
@@ -36,6 +37,9 @@ def main():
     log = logging.getLogger('suricata-connector')
 
     idmefv2_url = config.get('idmefv2', 'url')
+    idmefv2_login = config.get('idmefv2', 'login', fallback=None)
+    idmefv2_password = config.get('idmefv2', 'password', fallback=None)
+    idmefv2_client = IDMEFv2Client(url=idmefv2_url, login=idmefv2_login, passwd=idmefv2_password)
 
     suricata_config = config.get('suricata', 'config')
     eve_output = find_eve_output(suricata_config)
@@ -52,9 +56,9 @@ def main():
 
     server = None
     if filetype == 'unix_stream':
-        server = EVESocketServer(url = idmefv2_url, path = filename)
+        server = EVESocketServer(idmefv2_client, filename)
     elif filetype == 'regular':
-        server = EVEFileServer(url = idmefv2_url, path = filename)
+        server = EVEFileServer(idmefv2_client, filename)
 
     server.run()
 
