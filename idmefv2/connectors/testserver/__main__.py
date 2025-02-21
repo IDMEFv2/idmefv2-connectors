@@ -4,6 +4,7 @@ import logging
 import jsonschema
 import idmefv2
 
+
 class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
     def _response(self, status, response_data=None):
         self.send_response(status)
@@ -17,9 +18,11 @@ class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(out)
         self.wfile.flush()
 
+    # pylint: disable=invalid-name
     def do_GET(self):
         self._response(501)
 
+    # pylint: disable=invalid-name
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
@@ -29,7 +32,7 @@ class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
         response_data = None
         try:
             payload = idmefv2.SerializedMessage('application/json', post_data)
-            msg = idmefv2.Message.unserialize(payload)
+            idmefv2.Message.unserialize(payload)
         except jsonschema.exceptions.ValidationError as e:
             logging.error(e.message)
             status = 500
@@ -38,8 +41,10 @@ class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
 
 def parse_options():
     parser = argparse.ArgumentParser(description='Run a HTTP server validating IDMEFv2 messages')
-    parser.add_argument('-p', '--port', help='port to listen on', type=int, default=8888, dest='port')
-    parser.add_argument('-l', '--log-level', help='set log level', default='INFO', dest='log_level')
+    parser.add_argument('-p', '--port',
+                        help='port to listen on', type=int, default=8888, dest='port')
+    parser.add_argument('-l', '--log-level',
+                        help='set log level', default='INFO', dest='log_level')
     return parser.parse_args()
 
 def _main():

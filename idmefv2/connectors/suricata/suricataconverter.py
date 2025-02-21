@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from idmefv2.connectors.jsonconverter import JSONConverter
+from ..jsonconverter import JSONConverter
 
 def idmefv2_uuid():
     return uuid.uuid4().urn[9:]
@@ -26,6 +26,7 @@ def fix_protocol(proto):
         return 'UNKNOWN'
     return proto
 
+# pylint: disable=too-few-public-methods
 class SuricataConverter(JSONConverter):
     IDMEFV2_TEMPLATE = {
         'Version': '2.D.V04',

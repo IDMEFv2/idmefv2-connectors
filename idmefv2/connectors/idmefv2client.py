@@ -3,6 +3,7 @@ import requests
 
 log = logging.getLogger('idmefv2-client')
 
+# pylint: disable=too-few-public-methods
 class IDMEFv2Client:
     def __init__(self, *, url: str, login: str = None, password: str = None):
         self.url = url
