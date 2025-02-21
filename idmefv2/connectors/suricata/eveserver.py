@@ -6,13 +6,12 @@ import json
 import logging
 import os
 import socketserver
+import sys
 import time
 from typing import Union
-import requests
-import sys
-from idmefv2.connectors.filetailer import FileTailer
-from idmefv2.connectors.suricata.suricataconverter import SuricataConverter
-from idmefv2.connectors.idmefv2client import IDMEFv2Client
+from ..filetailer import FileTailer
+from .suricataconverter import SuricataConverter
+from ..idmefv2client import IDMEFv2Client
 
 log = logging.getLogger('suricata-connector')
 

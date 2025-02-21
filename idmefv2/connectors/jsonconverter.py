@@ -3,7 +3,7 @@
 '''
 import jsonpath_ng as jsonpath
 
-class JSONConverter(object):
+class JSONConverter:
 
     @staticmethod
     def __compile_template(template: any):
@@ -69,6 +69,7 @@ class JSONConverter(object):
             return ret
         return None
 
+    # pylint: disable=unused-argument
     def filter(self, src: dict) -> bool:
         '''
             Filters JSON objects that must not be converted
