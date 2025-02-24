@@ -1,5 +1,8 @@
 '''
-    The Unix socket server listening for EVE alerts
+    The server listening for EVE alerts
+    Currently, 2 servers are implemented:
+    - Unix socket
+    - Log file 'tail -f'
 '''
 import abc
 import json
@@ -25,6 +28,16 @@ class EVEServer(abc.ABC):
         self.converter = SuricataConverter()
 
     def alert(self, b: Union[str,bytes]):
+        '''
+        Process a Suricata alert:
+            - converts parameter to JSON
+            - call converter
+            - if alert was converted, send it to IDMEFv2 server
+
+
+        Args:
+            b (Union[str,bytes]): the Suricata alert
+        '''
         eve_alert = json.loads(b)
         (converted, idmefv2_alert) = self.converter.convert(eve_alert)
 
@@ -33,16 +46,28 @@ class EVEServer(abc.ABC):
 
     @abc.abstractmethod
     def run(self):
+        '''
+        Server loop, implemeted in sub-classes
+
+        Raises:
+            NotImplementedError: must be implemented in concrete sub-classes
+        '''
         raise NotImplementedError
 
 class EVEStreamRequestHandler(socketserver.StreamRequestHandler):
+    '''
+    Handler class for Unix socket
+    '''
     def handle(self):
         data = self.rfile.readline().strip()
         log.debug("received data %s", str(data))
         self.server.eve_server.alert(data)
 
 class EVEUnixStreamServer(socketserver.UnixStreamServer):
-    def __init__(self, eve_socket_server):
+    '''
+    A class derived from UnixStreamServer, with additional field
+    '''
+    def __init__(self, eve_socket_server: 'EVESocketServer'):
         super().__init__(eve_socket_server.socket_path, EVEStreamRequestHandler)
         self.eve_server = eve_socket_server
 
@@ -89,6 +114,13 @@ class EVEFileServer(EVEServer):
         sys.exit(1)
 
     def run(self):
+        '''
+        Server loop:
+            - wait for new line appended at end of log file (as in 'tail -f')
+            - pass the line to base class alert() method
+
+        Server waits for creation of log file, with timeout
+        '''
         self._wait_for_file()
 
         log.info("Tailing from file %s", self.file_path)

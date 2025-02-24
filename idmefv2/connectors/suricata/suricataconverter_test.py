@@ -1,3 +1,7 @@
+# pylint: disable=missing-function-docstring
+'''
+Tests for the Suricata converter
+'''
 from .suricataconverter import SuricataConverter
 
 EVE_ALERT_1 = {

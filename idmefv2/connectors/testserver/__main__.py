@@ -1,3 +1,6 @@
+'''
+A HTTP server for testing
+'''
 import argparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
@@ -6,7 +9,17 @@ import idmefv2
 
 
 class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
-    def _response(self, status, response_data=None):
+    '''
+    A sub-class of BaseHTTPRequestHandler handling HTTP requests
+    '''
+    def _response(self, status: int, response_data:str | None =None):
+        '''
+        Sends the HTTP response
+
+        Args:
+            status (int): status to respond
+            response_data (str | None, optional): content of response. Defaults to None.
+        '''
         self.send_response(status)
         if response_data is None:
             self.end_headers()
@@ -20,10 +33,20 @@ class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
 
     # pylint: disable=invalid-name
     def do_GET(self):
+        '''
+        Handles a HTTP GET
+        '''
         self._response(501)
 
     # pylint: disable=invalid-name
     def do_POST(self):
+        '''
+        Handles a HTTP POST:
+        - read content
+        - logs the request
+        - unserialize it as IDMEFv2 message and validate it
+        - responds 200 if message is OK, 500 if not
+        '''
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
         logging.info("POST request\nPath: %s\nHeaders:\n%s\nBody:\n%s\n",
@@ -40,6 +63,9 @@ class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
         self._response(status, response_data)
 
 def parse_options():
+    '''
+    Parse command line options
+    '''
     parser = argparse.ArgumentParser(description='Run a HTTP server validating IDMEFv2 messages')
     parser.add_argument('-p', '--port',
                         help='port to listen on', type=int, default=8888, dest='port')

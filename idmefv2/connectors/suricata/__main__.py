@@ -1,4 +1,6 @@
-
+'''
+Main for Suricata connector
+'''
 import argparse
 import logging
 import sys
@@ -8,18 +10,37 @@ from .eveserver import EVESocketServer, EVEFileServer
 from ..idmefv2client import IDMEFv2Client
 
 class Configuration(ConfigParser):
+    '''
+    Configuration using ConfigParser
+    '''
     def __init__(self, filename):
         super().__init__()
 
         self.read(filename)
 
 def parse_options():
+    '''
+    Parse command line options
+
+    Returns:
+        Namespace: parsed command line options
+    '''
     parser = argparse.ArgumentParser(description='Launch the EVE to IDMEFv2 conversion server')
     parser.add_argument('-c', '--conf', help='give configuration file', dest='conf_file')
     return parser.parse_args()
 
 
-def find_eve_output(filename):
+def find_eve_output(filename: str):
+    '''
+    Reads Suricata YAML configuration file in order to find EVE output configuration fields
+
+    Args:
+        filename (str): path to the Suricata configuration file
+
+    Returns:
+        None if EVE output disabled or configuration not found
+        (filetype, filename) tuple if found and enabled
+    '''
     with open(filename, 'rb') as f:
         cfg = yaml.safe_load(f)
         r = [x for x in cfg['outputs'] if 'eve-log' in x]
@@ -29,6 +50,14 @@ def find_eve_output(filename):
     return None
 
 def main():
+    '''
+    Main function:
+        - read configuration file
+        - set logging level
+        - creates the IDMEFv2 HTTP client
+        - parse Suricata configuration file
+        - according to EVE output configuration, launch the EVE server
+    '''
     options = parse_options()
     config = Configuration(options.conf_file)
 

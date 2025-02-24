@@ -1,3 +1,7 @@
+# pylint: disable=missing-function-docstring
+'''
+Tests for the JSON converter
+'''
 from .jsonconverter import JSONConverter
 
 def foobar():
