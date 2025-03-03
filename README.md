@@ -5,9 +5,9 @@ This repository contains Python implementations of IDMEFv2 connectors for variou
 
 Base classes for IDMEFv2 connectors implementations are provided:
 
-- `JSONConverter`: Generic JSON to JSON converter
-- `FileTailer`: Python implementation of Unix 'tail -f'
-- `IDMEFv2Client`: A HTTP client POSTing IDMEFv2 messages and logging response
+- [`JSONConverter`](./idmefv2/connectors/jsonconverter.py): Generic JSON to JSON converter
+- [`FileTailer`](./idmefv2/connectors/filetailer.py): Python implementation of Unix 'tail -f'
+- [`IDMEFv2Client`](./idmefv2/connectors/idmefv2client.py): A HTTP client POSTing IDMEFv2 messages and logging response
 
 A HTTP test server is also available in [./idmefv2/connectors/testserver](./idmefv2/connectors/testserver)
 
