@@ -1,6 +1,6 @@
 # IDMEFv2 suricata connector
 
-This repository contains Python implementation of IDMEFv2 suricata (https://suricata.io/) connector.
+This directory contains Python implementation of IDMEFv2 suricata (https://suricata.io/) connector.
 
 ## Overview
 
@@ -9,10 +9,6 @@ The connector uses suricata EVE JSON output (https://docs.suricata.io/en/latest/
 The connector implements a server which can either, depending on Suricata configuration:
 - receive EVE JSON objects using a Unix socket
 - or poll a log file containing EVE JSON objects
-
-## Installation
-
-Refer to [IDMEFv2 connectors](../../../README.md) for installation instructions.
 
 ## Configuration
 
