@@ -9,7 +9,7 @@ Base classes for IDMEFv2 connectors implementations are provided:
 - [`FileTailer`](./idmefv2/connectors/filetailer.py): Python implementation of Unix 'tail -f'
 - [`IDMEFv2Client`](./idmefv2/connectors/idmefv2client.py): A HTTP client POSTing IDMEFv2 messages and logging response
 
-A HTTP test server is also available in [./idmefv2/connectors/testserver](./idmefv2/connectors/testserver)
+A HTTP test server is also available in [./idmefv2/connectors/testserver](./idmefv2/connectors/testserver/#overview)
 
 ## Prerequisites
 
@@ -47,7 +47,7 @@ This will install as well the dependencies.
 
 Python unit tests using [`pytest`](https://docs.pytest.org/en/stable/) are provided:
 
-```sh
+``` sh
 $ pytest
 =========================================================================== test session starts ============================================================================
 platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
@@ -63,20 +63,13 @@ idmefv2/connectors/suricata/suricataconverter_test.py ....                      
 
 ## Running
 
+## Running the Suricata connector
+
+See [./idmefv2/connectors/suricata](./idmefv2/connectors/suricata/#running)
+
 ## Running the test server
 
-The `idmefv2.connectors.testserver` Python module can be run directly. Command line options are:
-
-- `--port=PORT`: gives port to listen on
-- `log-level=LEVEL`: gives logging lever, as in Python `logging`
-
-For example:
-
-``` sh
-python3 -m idmefv2.connectors.testserver --port 9999 --log-level DEBUG
-
-```
-
+See [./idmefv2/connectors/testserver](./idmefv2/connectors/testserver/#running)
 
 # Contributions
 

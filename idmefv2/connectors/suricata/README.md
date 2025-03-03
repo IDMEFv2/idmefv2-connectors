@@ -10,11 +10,15 @@ The connector implements a server which can either, depending on Suricata config
 - receive EVE JSON objects using a Unix socket
 - or poll a log file containing EVE JSON objects
 
-## Configuration
+The connector parses the Suricata configuration file in order to extract the EVE output configuration.
+
+## Running
 
 The Suricata connector uses a configuration file parsed by Python `configparser` module. An example of configuration file is given in [suricata-idmefv2.sample.conf](./suricata-idmefv2.sample.conf).
 
-```
+Example of Suricata connector configuration file:
+
+``` ini
 [logging]
 # Logging level: change to DEBUG for more information, INFO for less information
 level = DEBUG
@@ -22,25 +26,23 @@ level = DEBUG
 
 [suricata]
 # Location of suricata configuration file
-config=/etc/suricata/suricata.yaml
+config = /etc/suricata/suricata.yaml
 
 [idmefv2]
 # URL of server to POST IDMEFv2 alerts
 url = http://127.0.0.1:8888
 ```
 
-## Running
-
 The `idmefv2.connectors.suricata` Python module can be run directly. The only mandatory command line argument is the path of the configuration file.
 
-```
+``` sh
 python3 -m idmefv2.connectors.suricata -c /etc/suricata-idmefv2.conf
 ```
 
-## Testing
+Once the connector running, a Suricata alert can be triggered using a HTTP request:
 
-Run:
-
-```
+``` sh
 curl http://testmynids.org/uid/index.html
 ```
+
+This should trigger a Suricata alert which in turn will be converted to IDMEFv2 and forwarded either to the test server or to another server receiving IDMEFv2 alerts.
