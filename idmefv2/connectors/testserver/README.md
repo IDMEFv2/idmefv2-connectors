@@ -1,6 +1,6 @@
 # IDMEFv2 test server
 
-This repository contains a Python implementation of a test HTTP server serving POST requests containing IDMEFv2 messages.
+This directory contains a Python implementation of a test HTTP server serving POST requests containing IDMEFv2 messages.
 
 ## Overview
 

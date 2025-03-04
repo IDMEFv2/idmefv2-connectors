@@ -10,7 +10,9 @@ The connector implements a server which can either, depending on Suricata config
 - receive EVE JSON objects using a Unix socket
 - or poll a log file containing EVE JSON objects
 
-The connector parses the Suricata configuration file in order to extract the EVE output configuration.
+The Suricata configuration file is parsed in order to extract the EVE output configuration.
+
+Upon reception of a EVE alert, the alert is converted to IDMEFv2 and sent to a HTTP server using a POST request.
 
 ## Running
 
