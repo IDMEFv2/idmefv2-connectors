@@ -18,7 +18,7 @@ The following prerequisites must be installed on your system to install and use 
 - Python 3.10 or later
 - The Python [setuptools](https://pypi.org/project/setuptools/) package (usually available as a system package under the name `python3-setuptools`)
 
-The Python dependencies are the following:
+Python dependencies are:
 - inotify
 - jsonpath_ng
 - pyyaml
@@ -42,6 +42,14 @@ pip install --editable .
 This will install as well the dependencies.
 
 ### Installation from packages
+
+`idmefv2-connectors` provides packages currently hosted on [TestPyPI](https://test.pypi.org/).
+
+To install using TestPyPI, use the following command:
+
+```
+pip install --extra-index-url https://test.pypi.org/simple/ idmefv2-connectors
+```
 
 ## Testing
 
