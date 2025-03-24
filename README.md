@@ -35,7 +35,7 @@ Installing the dependencies using `requirements.txt` is not supported; this repo
 To install all modules, simply run in the root directory of the git clone:
 
 ``` sh
-. /PATH/TO/THE/PIP/OF/YOUR/VIRTUALENV/bin/activate  # only if using a virtualenv
+. /PATH/TO/YOUR/VIRTUALENV/bin/activate  # only if using a virtualenv
 pip install --editable .
 ```
 
