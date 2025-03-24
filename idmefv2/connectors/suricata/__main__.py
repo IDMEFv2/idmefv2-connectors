@@ -44,7 +44,8 @@ def find_eve_output(filename: str):
     '''
     with open(filename, 'rb') as f:
         suricata_config = yaml.safe_load(f)
-        eve_log = suricata_config['outputs'].get('eve-log')
+        # suricata_config['outputs'] is a list of dict
+        eve_log = next((output for output in suricata_config['outputs'] if 'eve-log' in output), None)
         if eve_log is None:
             return None
         enabled = eve_log.get('enabled', False)
