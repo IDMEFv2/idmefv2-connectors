@@ -3,6 +3,7 @@ Main for Suricata connector
 '''
 import argparse
 import logging
+import os.path
 import sys
 from configparser import ConfigParser
 import yaml
@@ -38,16 +39,25 @@ def find_eve_output(filename: str):
         filename (str): path to the Suricata configuration file
 
     Returns:
-        None if EVE output disabled or configuration not found
+        None if configuration not found or EVE output disabled
         (filetype, filename) tuple if found and enabled
     '''
     with open(filename, 'rb') as f:
-        cfg = yaml.safe_load(f)
-        r = [x for x in cfg['outputs'] if 'eve-log' in x]
-        el= r[0]['eve-log']
-        if el['enabled']:
-            return (el['filetype'], el['filename'])
-    return None
+        suricata_config = yaml.safe_load(f)
+        eve_log = suricata_config['outputs'].get('eve-log')
+        if eve_log is None:
+            return None
+        enabled = eve_log.get('enabled', False)
+        filetype = eve_log.get('filetype')
+        filename = eve_log.get('filename')
+        if not enabled or filetype is None or filename is None:
+            return None
+        if not os.path.isabs(filename):
+            default_log_dir = suricata_config.get('default-log-dir')
+            if default_log_dir is None:
+                return None
+            filename = os.path.join(default_log_dir, filename)
+        return (filetype, filename)
 
 def main():
     '''
