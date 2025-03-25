@@ -45,18 +45,22 @@ def find_eve_output(filename: str):
     with open(filename, 'rb') as f:
         suricata_config = yaml.safe_load(f)
         # suricata_config['outputs'] is a list of dict
-        eve_log = next((output for output in suricata_config['outputs'] if 'eve-log' in output), None)
-        if eve_log is None:
-            return None
+        outputs = (output for output in suricata_config['outputs'] if 'eve-log' in output)
+        eve_log_output = next(outputs, None)
+        if eve_log_output is None:
+            raise KeyError('eve-log not found in outputs')
+        eve_log = eve_log_output['eve-log']
         enabled = eve_log.get('enabled', False)
         filetype = eve_log.get('filetype')
         filename = eve_log.get('filename')
-        if not enabled or filetype is None or filename is None:
-            return None
+        if not enabled:
+            raise ValueError('EVE output is disabled')
+        if filetype is None or filename is None:
+            raise KeyError('filetype or filename not found')
         if not os.path.isabs(filename):
             default_log_dir = suricata_config.get('default-log-dir')
             if default_log_dir is None:
-                return None
+                raise ValueError('filename is relative and no default-log-dir defined')
             filename = os.path.join(default_log_dir, filename)
         return (filetype, filename)
 
