@@ -38,8 +38,11 @@ def find_eve_output(filename: str):
     Args:
         filename (str): path to the Suricata configuration file
 
+    Raises:
+        KeyError: if needed keys not found in configuration fields
+        ValueError: if EVE output disabled
+
     Returns:
-        None if configuration not found or EVE output disabled
         (filetype, filename) tuple if found and enabled
     '''
     with open(filename, 'rb') as f:
@@ -60,7 +63,7 @@ def find_eve_output(filename: str):
         if not os.path.isabs(filename):
             default_log_dir = suricata_config.get('default-log-dir')
             if default_log_dir is None:
-                raise ValueError('filename is relative and no default-log-dir defined')
+                raise KeyError('filename is relative and no default-log-dir defined')
             filename = os.path.join(default_log_dir, filename)
         return (filetype, filename)
 
@@ -86,13 +89,7 @@ def main():
     idmefv2_client = IDMEFv2Client(url=idmefv2_url, login=idmefv2_login, password=idmefv2_password)
 
     suricata_config = config.get('suricata', 'config')
-    eve_output = find_eve_output(suricata_config)
-    if eve_output is None:
-        log.error('error loading Suricata config file')
-        sys.exit(1)
-
-    filetype, filename = eve_output
-
+    filetype, filename = find_eve_output(suricata_config)
     accepted_filetypes = ['unix_stream', 'regular']
     if filetype not in accepted_filetypes:
         log.error("configuration option suricata.eve must be one of %s", accepted_filetypes)
