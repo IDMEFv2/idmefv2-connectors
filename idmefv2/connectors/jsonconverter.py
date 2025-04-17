@@ -54,6 +54,7 @@ class JSONConverter:
         Args:
             template (dict): the template of conversion output
         '''
+        self._template = template
         self._compiled_template = JSONConverter.__compile_template(template)
 
     @staticmethod
