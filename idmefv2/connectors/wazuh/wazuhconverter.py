@@ -101,4 +101,4 @@ class WazuhConverter(JSONConverter):
         Returns:
             bool: true if src must be converted
         '''
-        return ('syscheck' in src)
+        return 'syscheck' in src
