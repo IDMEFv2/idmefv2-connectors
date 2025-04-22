@@ -7,10 +7,8 @@
 import abc
 import json
 import logging
-import os
 import socketserver
 import sys
-import time
 from typing import Union
 from ..filetailer import FileTailer
 from .suricataconverter import SuricataConverter
@@ -102,30 +100,22 @@ class EVEFileServer(EVEServer):
         super().__init__(idmefv2_client)
         self.file_path = path
 
-    def _wait_for_file(self):
-        count = 0
-        max_retries = 20
-        while count < max_retries:
-            if os.path.isfile(self.file_path) and os.access(self.file_path, os.R_OK):
-                return
-            count += 1
-            time.sleep(5)
-        log.error("cannot read file %s", self.file_path)
-        sys.exit(1)
-
     def run(self):
         '''
         Server loop:
             - wait for new line appended at end of log file (as in 'tail -f')
             - pass the line to base class alert() method
-
-        Server waits for creation of log file, with timeout
         '''
-        self._wait_for_file()
 
         log.info("Tailing from file %s", self.file_path)
 
         ft = FileTailer(self.file_path)
+        try:
+            ft.wait_for_file()
+        except FileNotFoundError:
+            log.error("cannot read file %s", self.file_path)
+            sys.exit(1)
+
         for line in ft.tail():
             log.debug("received %s", str(line))
             super().alert(line)

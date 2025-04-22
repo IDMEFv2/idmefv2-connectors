@@ -1,6 +1,8 @@
 '''
 Python implementation of Unix 'tail -f'
 '''
+import os
+import time
 import inotify.adapters
 
 # pylint: disable=too-few-public-methods
@@ -10,6 +12,25 @@ class FileTailer:
     '''
     def __init__(self, path: str):
         self._path = path
+
+    def wait_for_file(self, retries: int = 16):
+        '''
+        Wait for file to be created.
+        Check for os.path.isfile and os.access; if fails, sleep and retry.
+
+        Args:
+            retries (int, optional): number of retries. Defaults to 16.
+
+        Raises:
+            FileNotFoundError: if file still not exists after retries reached
+        '''
+        count = 0
+        while count < retries:
+            if os.path.isfile(self._path) and os.access(self._path, os.R_OK):
+                return
+            count += 1
+            time.sleep(5)
+        raise FileNotFoundError()
 
     def tail(self):
         '''
