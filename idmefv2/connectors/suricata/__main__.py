@@ -10,15 +10,6 @@ import yaml
 from .eveserver import EVESocketServer, EVEFileServer
 from ..idmefv2client import IDMEFv2Client
 
-class Configuration(ConfigParser):
-    '''
-    Configuration using ConfigParser
-    '''
-    def __init__(self, filename):
-        super().__init__()
-
-        self.read(filename)
-
 def parse_options():
     '''
     Parse command line options
@@ -77,7 +68,8 @@ def main():
         - according to EVE output configuration, launch the EVE server
     '''
     options = parse_options()
-    config = Configuration(options.conf_file)
+    config = ConfigParser()
+    config.read(options.conf_file)
 
     level = config.get('logging', 'level', fallback='INFO')
     logging.basicConfig(level=level)
