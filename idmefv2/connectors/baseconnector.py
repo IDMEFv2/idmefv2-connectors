@@ -6,6 +6,7 @@ from configparser import ConfigParser
 import logging
 from .idmefv2client import IDMEFv2Client
 
+# pylint: disable=too-few-public-methods
 class BaseConnector:
     '''
     Base class for connectors:
