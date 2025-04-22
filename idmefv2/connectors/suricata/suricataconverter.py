@@ -2,17 +2,8 @@
 The Suricata to IDMEFv2 convertor.
 '''
 import datetime
-import uuid
 from ..jsonconverter import JSONConverter
-
-def idmefv2_uuid() -> str:
-    '''
-    Generates a UUID 4
-
-    Returns:
-        str: a new UUID version 4
-    '''
-    return uuid.uuid4().urn[9:]
+from ..uuid import idmefv2_uuid
 
 def convert_timestamp(ts: str) -> str:
     '''
