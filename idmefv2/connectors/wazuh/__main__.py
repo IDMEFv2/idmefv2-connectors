@@ -26,8 +26,9 @@ def _main():
     converter = WazuhConverter()
 
     for line in ft.tail():
-        log.debug("received %s", str(line))
-        wazuh_alert = json.loads(line)
+        msg = line.split(':')[1]
+        log.debug("received %s", msg)
+        wazuh_alert = json.loads(msg)
         (converted, idmefv2_alert) = converter.convert(wazuh_alert)
         if converted:
             wazuh_connector.idmefv2_client.post(idmefv2_alert)
