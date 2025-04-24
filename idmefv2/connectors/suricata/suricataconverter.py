@@ -3,20 +3,7 @@ The Suricata to IDMEFv2 convertor.
 '''
 import datetime
 from ..jsonconverter import JSONConverter
-from ..uuid import idmefv2_uuid
-
-def convert_timestamp(ts: str) -> str:
-    '''
-    Convert Suricata timestamp
-
-    Args:
-        ts (str): timestamp in Suricata format
-
-    Returns:
-        str: timestamp in IDMEFv2 format
-    '''
-    i = datetime.datetime.fromisoformat(ts)
-    return i.isoformat()
+from ..idmefv2funs import idmefv2_uuid, idmefv2_convert_timestamp
 
 def convert_severity(severity: int) -> str:
     '''
@@ -72,7 +59,7 @@ class SuricataConverter(JSONConverter):
     IDMEFV2_TEMPLATE = {
         'Version': '2.D.V04',
         'ID': idmefv2_uuid,
-        'CreateTime': (convert_timestamp, '$.timestamp'),
+        'CreateTime': (idmefv2_convert_timestamp, '$.timestamp'),
         'Category': ['Recon.Scanning'],
         'Priority': (convert_severity, '$.alert.severity'),
         'Description' : '$.alert.category',
