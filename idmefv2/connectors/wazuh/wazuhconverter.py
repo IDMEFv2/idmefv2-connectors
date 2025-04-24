@@ -3,7 +3,7 @@ The wazuh JSON to IDMEFv2 convertor.
 '''
 #import datetime
 from ..jsonconverter import JSONConverter
-from ..uuid import idmefv2_uuid
+from ..idmefv2funs import idmefv2_uuid, idmefv2_convert_timestamp
 
 _LEVELS = {
     0: {'Title': 'Ignored', 'Priority': 'Info'},
@@ -39,6 +39,9 @@ def convert_level(level: int) -> str:
         return 'High'
     return _LEVELS[level]['Priority']
 
+def cat(*args):
+    return ''.join(args)
+
 # pylint: disable=too-few-public-methods
 class WazuhConverter(JSONConverter):
     '''
@@ -49,7 +52,7 @@ class WazuhConverter(JSONConverter):
     IDMEFV2_TEMPLATE = {
         'Version': '2.D.V04',
         'ID': idmefv2_uuid,
-        'CreateTime': '$.timestamp',
+        'CreateTime': (idmefv2_convert_timestamp, '$.timestamp'),
         'Category': ['Information. UnauthorizedModification'],
         'Priority': (convert_level, '$.rule.level'),
         'Description' : '$.rule.description',
@@ -68,15 +71,17 @@ class WazuhConverter(JSONConverter):
                 "Integrity"
             ]
         },
-        "Attachment": {
-            "Name": "syscheck",
-            "FileName": "$.syscheck.path",
-            "Hash": [
-                "$.syscheck.sha1_after",
-                "$.syscheck.sha256_after",
-            ],
-            "Size": (int, "$.syscheck.size_after"),
-        },
+        "Attachment": [
+            {
+                "Name": "syscheck",
+                "FileName": "$.syscheck.path",
+                "Hash": [
+                    (cat, "sha-1:", "$.syscheck.sha1_after"),
+                    (cat, "sha-256:", "$.syscheck.sha256_after"),
+                ],
+                "Size": (int, "$.syscheck.size_after"),
+            },
+        ],
     }
 
     def __init__(self):
