@@ -37,7 +37,7 @@ class FileTailer:
         A generator yielding lines appended to file
 
         Yields:
-            str: the last line appended to file
+            bytes: the last line appended to file
         '''
         i = inotify.adapters.Inotify()
         i.add_watch(self._path, mask=inotify.constants.IN_MODIFY)
@@ -45,5 +45,5 @@ class FileTailer:
         with open(self._path, 'rb') as fd:
             fd.seek(0, 2)
             for _ in i.event_gen(yield_nones=False):
-                line = str(fd.readline().strip())
+                line = fd.readline().strip()
                 yield line
