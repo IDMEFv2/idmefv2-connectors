@@ -1,13 +1,14 @@
 '''
 Base connector
 '''
+import abc
 import argparse
 from configparser import ConfigParser
 import logging
 from .idmefv2client import IDMEFv2Client
 
 # pylint: disable=too-few-public-methods
-class BaseConnector:
+class Connector(abc.ABC):
     '''
     Base class for connectors:
         - parse command line
@@ -47,3 +48,13 @@ class BaseConnector:
         login = self.config.get('idmefv2', 'login', fallback=None)
         password = self.config.get('idmefv2', 'password', fallback=None)
         self.idmefv2_client = IDMEFv2Client(url=url, login=login, password=password)
+
+    @abc.abstractmethod
+    def run(self):
+        '''
+        Connector loop, implemeted in sub-classes
+
+        Raises:
+            NotImplementedError: must be implemented in concrete sub-classes
+        '''
+        raise NotImplementedError
