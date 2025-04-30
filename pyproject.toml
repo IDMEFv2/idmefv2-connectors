@@ -13,12 +13,11 @@ authors = [
 ]
 description = "Various connectors for IDMEF v2"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "Apache-2.0"
 keywords = ["IDMEFv2"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python",
-    "License :: OSI Approved :: BSD License",
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
