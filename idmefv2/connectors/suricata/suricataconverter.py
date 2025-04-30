@@ -1,7 +1,6 @@
 '''
 The Suricata to IDMEFv2 convertor.
 '''
-import datetime
 from ..jsonconverter import JSONConverter
 from ..idmefv2funs import idmefv2_uuid, idmefv2_convert_timestamp
 
