@@ -2,6 +2,7 @@
 
 This repository contains Python implementations of IDMEFv2 connectors for various probes and managers:
 - Suricata NIDS (https://suricata.io/): see [./idmefv2/connectors/suricata](./idmefv2/connectors/suricata/#overview)
+- Zabbix (https://www.zabbix.com): see [./idmefv2/connectors/zabbix](./idmefv2/connectors/zabbix/#overview)
 
 Base classes for IDMEFv2 connectors implementations are provided:
 
@@ -57,23 +58,36 @@ Python unit tests using [`pytest`](https://docs.pytest.org/en/stable/) are provi
 
 ``` sh
 $ pytest
-=========================================================================== test session starts ============================================================================
-platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0
+================================================================= test session starts ==================================================================
+platform win32 -- Python 3.11.9, pytest-8.3.5, pluggy-1.5.0     
 rootdir: /SOME/WHERE/idmefv2-connectors
 configfile: pyproject.toml
-collected 10 items
+collected 19 items
 
-idmefv2/connectors/jsonconverter_test.py ......                                                                                                                      [ 60%]
-idmefv2/connectors/suricata/suricataconverter_test.py ....                                                                                                           [100%]
+idmefv2/connectors/jsonconverter_test.
+py ...... 
+   [ 31%] 
+idmefv2/connectors/suricata/suricataconverter_test
+.py ...... 
+     [ 52%]
 
-============================================================================ 10 passed in 0.20s ============================================================================
+idmefv2/connectors/zabbix/zabbixconverter_test
+.py ...... 
+    [100%]
+
+================================================================== 19 passed in 0.67s ==================================================================
 ```
+
 
 ## Running
 
 ## Running the Suricata connector
 
 See [./idmefv2/connectors/suricata](./idmefv2/connectors/suricata/#running)
+
+## Running the Zabbix connector
+
+See [./idmefv2/connectors/zabbix](./idmefv2/connectors/zabbix/#running)
 
 ## Running the test server
 
