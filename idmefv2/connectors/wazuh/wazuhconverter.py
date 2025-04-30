@@ -40,6 +40,12 @@ def convert_level(level: int) -> str:
     return _LEVELS[level]['Priority']
 
 def cat(*args):
+    '''
+    Concatenate all arguments
+
+    Returns:
+        the result of concatenation
+    '''
     return ''.join(args)
 
 # pylint: disable=too-few-public-methods
