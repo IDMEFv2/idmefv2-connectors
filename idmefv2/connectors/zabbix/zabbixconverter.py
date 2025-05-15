@@ -63,7 +63,7 @@ class ZabbixConverter(JSONConverter):
             'Version': '2.D.V04',
             'ID': _idmef_uuid,
             'CreateTime': (_iso_timestamp, '$.clock'),
-            'Category': ['Other.Uncategorised'],  # overridden in convert()
+            'Category': (_map_category, '$.name'),
             'Priority': (_severity, '$.severity'),
             'Description': '$.name',
             'Analyzer': {
@@ -98,11 +98,3 @@ class ZabbixConverter(JSONConverter):
         - 'severity'
         """
         return ('clock' in src) and ('severity' in src)
-    
-    def convert(self, src: dict[str, Any]) -> tuple[bool, dict[str, Any]]:
-        should_forward, message = super().convert(src)
-        if not should_forward:
-            return False, {}
-        # dynamic Category based on trigger name
-        message['Category'] = _map_category(src.get('name', ''))
-        return True, message
