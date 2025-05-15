@@ -1,101 +1,90 @@
 from __future__ import annotations
-import argparse
 import logging
-from configparser import ConfigParser
-from http.server import HTTPServer
 import socket
+from http.server import HTTPServer
 from urllib.parse import urlparse
 
 from .push import ZabbixPushHelper, PushHandler
 from .poller import ZabbixPoller
 from .zabbixconverter import ZabbixConverter
-from ..idmefv2client import IDMEFv2Client
+from connector import Configuration, Runner
 
 log = logging.getLogger("zabbix-connector")
 
+class PollingRunner(Runner):
+    def __init__(self, cfg: Configuration, converter: ZabbixConverter):
+        super().__init__(cfg, converter)
 
-def _parse_args() -> argparse.Namespace:
-    ap = argparse.ArgumentParser(description="Zabbix → IDMEFv2 connector")
-    ap.add_argument("-c", "--conf", dest="conf_file", required=True,
-                    help="Path to connector configuration file")
-    return ap.parse_args()
+        self.poller = ZabbixPoller(
+            url=cfg.get("zabbix", "url"),
+            user=cfg.get("zabbix", "user"),
+            password=cfg.get("zabbix", "password"),
+            client=self.idmefv2_client,
+            poll_interval=cfg.getint("zabbix", "poll_interval", fallback=30)
+        )
+        self.poller.converter = converter
+
+    def run(self):
+        self.logger.info("Starting polling runner")
+        self.poller.run()
 
 
-def main() -> None:
-    args = _parse_args()
-    cfg = ConfigParser()
-    cfg.read(args.conf_file)
+class PushRunner(Runner):
+    def __init__(self, cfg: Configuration, converter: ZabbixConverter):
+        super().__init__(cfg, converter)
+        
+        zbx_url = cfg.get("zabbix", "url")
+        zbx_user = cfg.get("zabbix", "user")
+        zbx_pass = cfg.get("zabbix", "password")
 
-    # Logging setup
-    level = cfg.get("logging", "level", fallback="INFO").upper()
-    logging.basicConfig(
-        level=level,
-        format="%(asctime)s %(levelname)s %(name)s: %(message)s"
-    )
-    logging.getLogger("urllib3").setLevel(logging.WARNING)
+        self.helper = ZabbixPushHelper(url=zbx_url, user=zbx_user, password=zbx_pass)
+        self.helper.login()
 
-    # Mode must be either 'polling' or 'push'
+        # Server info setup
+        parsed = urlparse(zbx_url)
+        host = parsed.hostname or "localhost"
+        port = parsed.port or (443 if parsed.scheme == "https" else 80)
+        try:
+            ip = socket.gethostbyname(host)
+        except Exception:
+            ip = host
+
+        server_info = {"hostname": host, "ip": ip, "port": port}
+
+        # Set static attributes on PushHandler
+        PushHandler.converter = converter
+        PushHandler.client = self.idmefv2_client
+        PushHandler.helper = self.helper
+        PushHandler.server_info = server_info
+
+        listen = cfg.get("connector", "listen_address", fallback="0.0.0.0")
+        lport = cfg.getint("connector", "listen_port", fallback=9090)
+        self.server = HTTPServer((listen, lport), PushHandler)
+        self.listen_address = listen
+        self.listen_port = lport
+
+    def run(self):
+        self.logger.info("HTTP server listening on %s:%d/alert", self.listen_address, self.listen_port)
+        try:
+            self.server.serve_forever()
+        except KeyboardInterrupt:
+            self.logger.info("Interrupted by user")
+        finally:
+            self.server.server_close()
+
+
+def main():
+    cfg = Configuration("zabbix")
     mode = cfg.get("connector", "mode", fallback="polling").lower()
     if mode not in ("polling", "push"):
         raise ValueError("Mode must be either 'polling' or 'push'")
-    methods = [mode]
 
-    # Zabbix parameters
-    zbx_url  = cfg.get("zabbix", "url")
-    zbx_user = cfg.get("zabbix", "user")
-    zbx_pass = cfg.get("zabbix", "password")
-    poll_int = cfg.getint("zabbix", "poll_interval", fallback=30)
-
-    # IDMEFv2 client
-    client = IDMEFv2Client(
-        url      = cfg.get("idmefv2", "url"),
-        login    = cfg.get("idmefv2", "login",    fallback=None),
-        password = cfg.get("idmefv2", "password", fallback=None),
-    )
-
+    converter = ZabbixConverter([mode])
     if mode == "polling":
-        converter = ZabbixConverter(methods)
-        poller = ZabbixPoller(
-            url=zbx_url, user=zbx_user, password=zbx_pass,
-            client=client, poll_interval=poll_int
-        )
-        poller.converter = converter
-        poller.run()
-        return
-
-    # PUSH mode
-    log.info("Running in PUSH mode: connecting to Zabbix API")
-    helper = ZabbixPushHelper(url=zbx_url, user=zbx_user, password=zbx_pass)
-    helper.login()
-
-    converter = ZabbixConverter(methods)
-
-    # Prepare server metadata
-    parsed = urlparse(zbx_url)
-    host   = parsed.hostname or "unknown"
-    port   = parsed.port or (443 if parsed.scheme == "https" else 80)
-    try:
-        ip = socket.gethostbyname(host)
-    except Exception:
-        ip = host
-    server_info = {"hostname": host, "ip": ip, "port": port}
-
-    PushHandler.converter   = converter
-    PushHandler.client      = client
-    PushHandler.helper      = helper
-    PushHandler.server_info = server_info
-
-    listen = cfg.get("connector", "listen_address", fallback="0.0.0.0")
-    lport  = cfg.getint("connector", "listen_port",    fallback=9090)
-    srv    = HTTPServer((listen, lport), PushHandler)
-
-    log.info("Connector HTTP %s listening on %s:%d/alert", mode.upper(), listen, lport)
-    try:
-        srv.serve_forever()
-    except KeyboardInterrupt:
-        log.info("Interrupted by user")
-    finally:
-        srv.server_close()
+        runner = PollingRunner(cfg, converter)
+    else:
+        runner = PushRunner(cfg, converter)
+    runner.run()
 
 
 if __name__ == "__main__":

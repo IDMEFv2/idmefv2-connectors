@@ -55,6 +55,8 @@ python3 -m idmefv2.connectors.zabbix -c /etc/zabbix-idmefv2.conf
 
 **Push mode**: For test push mode you can follow (./ZABBIX_WEBHOOK_SETUP_README.md).
 
+**For a simpler setup without modifying your Zabbix server configuration, Polling Mode is the recommended option.**
+
 For detailed instructions on how to configure Zabbix to send alerts to the connector in push mode, including Media Type and Action setup, see (./ZABBIX_WEBHOOK_SETUP_README.md)
 
 In both modes, once an alert is retrieved, the connector will translate it into IDMEFv2 format and send it to the server configured under [idmefv2].
