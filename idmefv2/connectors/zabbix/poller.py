@@ -85,7 +85,11 @@ class ZabbixPoller:
         if trigger_id not in self.trigger_host_map:
             res = self._rpc(
                 "trigger.get",
-                {"triggerids": [trigger_id], "output": ["triggerid"], "selectHosts": ["hostid", "name"]},
+                {
+                    "triggerids": [trigger_id],
+                    "output": ["triggerid"],
+                    "selectHosts": ["hostid", "name"]
+                },
             )
             host = res[0]["hosts"][0]
             self.trigger_host_map[trigger_id] = host["hostid"]
@@ -96,7 +100,11 @@ class ZabbixPoller:
         if host_id not in self.host_iface_map:
             res = self._rpc(
                 "host.get",
-                {"hostids": [host_id], "output": ["hostid"], "selectInterfaces": ["type", "ip", "dns", "port"]},
+                {
+                    "hostids": [host_id],
+                    "output": ["hostid"],
+                    "selectInterfaces": ["type", "ip", "dns", "port"]
+                },
             )
             iface = next(
                 (i for i in res[0]["interfaces"] if int(i["type"]) == 1),
@@ -126,7 +134,12 @@ class ZabbixPoller:
             try:
                 problems = self._rpc(
                     "problem.get",
-                    {"output": "extend", "sortfield": "eventid", "sortorder": "ASC", "recent": True},
+                    {
+                        "output": "extend",
+                        "sortfield": "eventid",
+                        "sortorder": "ASC",
+                        "recent": True
+                    },
                 )
                 for prob in problems:
                     eid = prob["eventid"]

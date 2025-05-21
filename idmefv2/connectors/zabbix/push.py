@@ -71,7 +71,11 @@ class ZabbixPushHelper:
         if trigger_id not in self.trigger_host_map:
             res = self._rpc(
                 "trigger.get",
-                {"triggerids": [trigger_id], "output": ["triggerid"], "selectHosts": ["hostid", "name"]}
+                {
+                    "triggerids": [trigger_id],
+                    "output": ["triggerid"],
+                    "selectHosts": ["hostid", "name"]
+                }
             )
             host = res[0]["hosts"][0]
             self.trigger_host_map[trigger_id] = host["hostid"]
@@ -83,7 +87,11 @@ class ZabbixPushHelper:
         if host_id not in self.host_iface_map:
             res = self._rpc(
                 "host.get",
-                {"hostids": [host_id], "output": ["hostid"], "selectInterfaces": ["type", "ip", "dns", "port"]}
+                {
+                    "hostids": [host_id],
+                    "output": ["hostid"],
+                    "selectInterfaces": ["type", "ip", "dns", "port"]
+                }
             )
             iface = next(
                 (i for i in res[0]["interfaces"] if int(i["type"]) == 1),
@@ -110,6 +118,7 @@ class PushHandler(BaseHTTPRequestHandler):
         # disable base class logging
         return
 
+    # pylint: disable=invalid-name
     def do_POST(self) -> None:
         if self.path != "/alert":
             self.send_error(404, "Not Found")
@@ -137,7 +146,9 @@ class PushHandler(BaseHTTPRequestHandler):
             src["clock"] = prob[0]["clock"]
 
             # 2) fetch host/interface details
-            tid = self.helper._rpc("problem.get", {"eventids": [eid], "output": ["objectid"]})[0]["objectid"]
+            tid = self.helper._rpc(
+                "problem.get",
+                {"eventids": [eid], "output": ["objectid"]})[0]["objectid"]
             hid = self.helper._get_hostid_for_trigger(tid)
             ip, port = self.helper._get_iface_for_host(hid)
             host_name = self.helper.trigger_host_map.get(f"name_{tid}", "unknown")
