@@ -13,7 +13,7 @@ from ..idmefv2client import IDMEFv2Client
 
 log = logging.getLogger("zabbix-connector")
 
-
+# pylint: disable=too-many-instance-attributes, too-few-public-methods
 class ZabbixPushHelper:
     """
     Helper to fetch trigger/host details on demand from the Zabbix API.

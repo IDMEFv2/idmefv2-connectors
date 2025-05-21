@@ -19,9 +19,11 @@ from ..idmefv2client import IDMEFv2Client
 log = logging.getLogger("zabbix-poller")
 
 
+# pylint: disable=too-many-instance-attributes
 class ZabbixPoller:
     """Continuously polls Zabbix and relays new problems as IDMEFv2 messages."""
 
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         *,
