@@ -28,6 +28,7 @@ from .zabbixutil import (
 log = logging.getLogger("zabbix-connector")
 
 # pylint: disable=too-few-public-methods
+
 class ZabbixPushHelper:
     """
     Helper to fetch trigger/host details on demand from the Zabbix API.
@@ -58,6 +59,7 @@ class ZabbixPushHelper:
             raise RuntimeError(data["error"])
         self.token = data["result"]
         log.info("Authenticated to Zabbix API (token %s\u2026)", self.token[:8])
+
 
 
 class PushHandler(BaseHTTPRequestHandler):
@@ -111,6 +113,7 @@ class PushHandler(BaseHTTPRequestHandler):
             src["clock"] = prob[0]["clock"]
 
             # 2) fetch host/interface details
+
             tid = perform_rpc(
                 self.helper.session,
                 self.helper.auth.url,
@@ -134,6 +137,7 @@ class PushHandler(BaseHTTPRequestHandler):
                 self.helper.cache,
             )
             host_name = self.helper.cache.trigger_host_map.get(f"name_{tid}", "unknown")
+
 
             # 3) fetch trigger description & severity
             trg = perform_rpc(

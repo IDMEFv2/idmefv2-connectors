@@ -16,6 +16,7 @@ from .zabbixconverter import ZabbixConverter
 from ..connector import Configuration, Runner
 from .models import ZabbixAuth
 
+
 log = logging.getLogger("zabbix-connector")
 
 class PollingRunner(Runner):

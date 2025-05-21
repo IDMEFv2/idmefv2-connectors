@@ -24,9 +24,11 @@ from .zabbixutil import (
 log = logging.getLogger("zabbix-poller")
 
 
+# pylint: disable=too-many-instance-attributes
 class ZabbixPoller:
     """Continuously polls Zabbix and relays new problems as IDMEFv2 messages."""
 
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         *,
@@ -68,6 +70,7 @@ class ZabbixPoller:
             raise RuntimeError(resp["error"])
         self.ctx.token = resp["result"]
         log.info("Authenticated to Zabbix API (token %s…)", self.ctx.token[:8])
+      
 
     def _rpc(self, method: str, params: dict[str, Any] | None = None) -> Any:
         return perform_rpc(
@@ -77,6 +80,7 @@ class ZabbixPoller:
             method,
             params,
         )
+
 
     def run(self) -> None:
         """
@@ -110,7 +114,7 @@ class ZabbixPoller:
                         "output": "extend",
                         "sortfield": "eventid",
                         "sortorder": "ASC",
-                        "recent": True,
+                        "recent": True
                     },
                 )
                 for prob in problems:
