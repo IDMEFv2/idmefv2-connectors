@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 from .push import ZabbixPushHelper, PushHandler
 from .poller import ZabbixPoller
 from .zabbixconverter import ZabbixConverter
-from connector import Configuration, Runner
+from ..connector import Configuration, Runner
 
 log = logging.getLogger("zabbix-connector")
 
@@ -32,7 +32,7 @@ class PollingRunner(Runner):
 class PushRunner(Runner):
     def __init__(self, cfg: Configuration, converter: ZabbixConverter):
         super().__init__(cfg, converter)
-        
+
         zbx_url = cfg.get("zabbix", "url")
         zbx_user = cfg.get("zabbix", "user")
         zbx_pass = cfg.get("zabbix", "password")
@@ -64,7 +64,9 @@ class PushRunner(Runner):
         self.listen_port = lport
 
     def run(self):
-        self.logger.info("HTTP server listening on %s:%d/alert", self.listen_address, self.listen_port)
+        self.logger.info("HTTP server listening on %s:%d/alert",
+                         self.listen_address,
+                         self.listen_port)
         try:
             self.server.serve_forever()
         except KeyboardInterrupt:
