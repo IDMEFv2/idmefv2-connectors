@@ -10,6 +10,7 @@ dependencies = [
 requires-python = ">=3.10"
 authors = [
   {name = "François Déchelle"},
+  {name = "Emanuele Principato"},
 ]
 description = "Various connectors for IDMEF v2"
 readme = "README.md"
@@ -40,3 +41,4 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 'idmefv2.connectors.suricata' = ["*.sample.conf"]
+'idmefv2.connectors.zabbix' = ["*.sample.conf"]
