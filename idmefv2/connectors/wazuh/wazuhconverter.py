@@ -59,7 +59,7 @@ class WazuhConverter(JSONConverter):
         'Version': '2.D.V04',
         'ID': idmefv2_uuid,
         'CreateTime': (idmefv2_convert_timestamp, '$.timestamp'),
-        'Category': ['Information. UnauthorizedModification'],
+        'Category': ['Information.UnauthorizedModification'],
         'Priority': (convert_level, '$.rule.level'),
         'Description' : '$.rule.description',
         "Analyzer": {
