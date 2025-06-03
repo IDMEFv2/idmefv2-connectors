@@ -25,21 +25,21 @@ def test_alert_4():
     c, i = converter.convert(WAZUH_ALERT_4)
     assert c
     assert i['Priority'] == 'Low'
-    assert i['Attachment']['Size'] == 29
+    assert i['Attachment'][0]['Size'] == 29
 
 def test_alert_5():
     converter = WazuhConverter()
     c, i = converter.convert(WAZUH_ALERT_5)
     assert c
     assert i['Priority'] == 'Medium'
-    assert i['Attachment']['Hash'][0] == "c6ad41de8c6b30de49eb8bd196aebd078d2e3505"
+    assert i['Attachment'][0]['Hash'][0] == "sha-1:c6ad41de8c6b30de49eb8bd196aebd078d2e3505"
 
 def test_alert_6():
     converter = WazuhConverter()
     c, i = converter.convert(WAZUH_ALERT_6)
     assert c
     assert i['Priority'] == 'Medium'
-    assert i['Attachment']['Size'] == 58
+    assert i['Attachment'][0]['Size'] == 58
 
 WAZUH_ALERT_1 = {
   "timestamp": "2025-04-16T09:02:57.556+0000",
