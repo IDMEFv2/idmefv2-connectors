@@ -19,6 +19,7 @@ def test_alert_2():
     assert i['Attachment'][0]['FileName'] == "clam.7z"
     assert i['Attachment'][0]['Note'] == 'Virus found: Clamav.Test.File-6'
 
+# pylint: disable=line-too-long
 CLAMAV_ALERT_1 = {
     "Magic": "CLAMJSONv0",
     "RootFileType": "CL_TYPE_MSEXE",
@@ -43,6 +44,7 @@ CLAMAV_ALERT_1 = {
     ],
 }
 
+# pylint: disable=line-too-long
 CLAMAV_ALERT_2 = {
     "Magic": "CLAMJSONv0",
     "RootFileType": "CL_TYPE_7Z",
