@@ -1,8 +1,34 @@
 '''
 The clamav to IDMEFv2 convertor.
 '''
+from datetime import datetime
 from ..jsonconverter import JSONConverter
-from ..idmefv2funs import idmefv2_uuid, idmefv2_convert_timestamp
+from ..idmefv2funs import idmefv2_uuid
+
+def _create_time():
+    '''
+    Returns current date and time in ISO 8601 format, including timezone
+    '''
+    return datetime.now().astimezone().isoformat()
+
+def _find_virus(x: any):
+    if isinstance(x, dict):
+        for k, v in x.items():
+            if k == 'Viruses':
+                return v
+            r = _find_virus(v)
+            if r is not None:
+                return r
+    elif isinstance(x, list):
+        for v in x:
+            r = _find_virus(v)
+            if r is not None:
+                return r
+    return None
+
+def _viruses(x):
+    v = _find_virus(x)
+    return 'Virus found: ' + ', '.join(_find_virus(x)) if v is not None else 'Unknown'
 
 # pylint: disable=too-few-public-methods
 class ClamavConverter(JSONConverter):
@@ -14,52 +40,38 @@ class ClamavConverter(JSONConverter):
     IDMEFV2_TEMPLATE = {
         'Version': '2.D.V04',
         'ID': idmefv2_uuid,
-        'CreateTime': (idmefv2_convert_timestamp, '$.timestamp'),
-        'Category': ['Recon.Scanning'],
+        'CreateTime': _create_time,
+        'Category': ['Malicious.System'],
         'Priority': 'High',
-        'Description' : '$.alert.category',
+        'Description' : 'Virus found',
         "Analyzer": {
             "IP": "127.0.0.1",
             "Name": "clamav",
             "Model": "Clamav Antivirus",
             "Type": "Cyber",
             "Category": [
-                "NIDS"
+                "AV"
             ],
             "Data": [
-                "Network"
+                "File"
             ],
             "Method": [
                 "Signature"
             ]
         },
-        # "Attachment": [
-        #     {
-        #         "Name": "syscheck",
-        #         "FileName": "$.syscheck.path",
-        #         "Hash": [
-        #             (cat, "sha-1:", "$.syscheck.sha1_after"),
-        #             (cat, "sha-256:", "$.syscheck.sha256_after"),
-        #         ],
-        #         "Size": (int, "$.syscheck.size_after"),
-        #     },
-        # ],
+        "Attachment": [
+            {
+                "Name": "virus",
+                "FileName": "$.FileName",
+                "Hash": [
+                    ((lambda x : 'md5:' + x), "$.FileMD5"),
+                ],
+                "Size": (int, "$.FileSize"),
+                "Note": (_viruses, "$"),
+
+            },
+        ],
     }
 
     def __init__(self):
         super().__init__(ClamavConverter.IDMEFV2_TEMPLATE)
-
-    def filter(self, src: dict) -> bool:
-        '''
-        Filters out some Suricata alerts
-
-        Args:
-            src (dict): the Suricata input
-
-        Returns:
-            bool: true if src must be converted
-        '''
-        return ('event_type' in src
-                and src['event_type'] == 'alert'
-                and 'category' in src['alert']
-                and src['alert']['category'] != 'Generic Protocol Command Decode')
