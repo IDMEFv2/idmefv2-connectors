@@ -39,15 +39,6 @@ def convert_level(level: int) -> str:
         return 'High'
     return _LEVELS[level]['Priority']
 
-def cat(*args):
-    '''
-    Concatenate all arguments
-
-    Returns:
-        the result of concatenation
-    '''
-    return ''.join(args)
-
 # pylint: disable=too-few-public-methods
 class WazuhConverter(JSONConverter):
     '''
@@ -82,8 +73,8 @@ class WazuhConverter(JSONConverter):
                 "Name": "syscheck",
                 "FileName": "$.syscheck.path",
                 "Hash": [
-                    (cat, "sha-1:", "$.syscheck.sha1_after"),
-                    (cat, "sha-256:", "$.syscheck.sha256_after"),
+                    ((lambda h : 'sha-1:' + h), "$.syscheck.sha1_after"),
+                    ((lambda h : 'sha-256::' + h), "$.syscheck.sha256_after"),
                 ],
                 "Size": (int, "$.syscheck.size_after"),
             },
