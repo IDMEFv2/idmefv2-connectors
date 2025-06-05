@@ -6,9 +6,6 @@ from ..jsonconverter import JSONConverter
 from ..idmefv2funs import idmefv2_uuid
 
 def _create_time():
-    '''
-    Returns current date and time in ISO 8601 format, including timezone
-    '''
     return datetime.now().astimezone().isoformat()
 
 def _find_virus(x: any):
@@ -28,7 +25,7 @@ def _find_virus(x: any):
 
 def _viruses(x):
     v = _find_virus(x)
-    return 'Virus found: ' + ', '.join(_find_virus(x)) if v is not None else 'Unknown'
+    return 'Virus found: ' + ', '.join(_find_virus(x)) if v else 'Unknown'
 
 # pylint: disable=too-few-public-methods
 class ClamavConverter(JSONConverter):
@@ -64,7 +61,7 @@ class ClamavConverter(JSONConverter):
                 "Name": "virus",
                 "FileName": "$.FileName",
                 "Hash": [
-                    ((lambda x : 'md5:' + x), "$.FileMD5"),
+                    ((lambda h : 'md5:' + h), "$.FileMD5"),
                 ],
                 "Size": (int, "$.FileSize"),
                 "Note": (_viruses, "$"),
