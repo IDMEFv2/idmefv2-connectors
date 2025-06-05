@@ -10,6 +10,7 @@ def test_alert_1():
     assert c
     assert i['Priority'] == 'High'
     assert i['Attachment'][0]['Size'] == 6656
+    assert i['Attachment'][0]['Hash'][0] == "md5:c6ccf4ddbccbcaa01b441690a329d1b0"
     assert i['Attachment'][0]['Note'] == 'Virus found: Clamav.Test.File-6'
 
 def test_alert_2():
@@ -17,6 +18,7 @@ def test_alert_2():
     _, i = converter.convert(CLAMAV_ALERT_2)
     assert i['Attachment'][0]['Size'] == 362
     assert i['Attachment'][0]['FileName'] == "clam.7z"
+    assert i['Attachment'][0]['Hash'][0] == "md5:30cc73fe9ec56e474c4d19c57ffe0546"
     assert i['Attachment'][0]['Note'] == 'Virus found: Clamav.Test.File-6'
 
 # pylint: disable=line-too-long
