@@ -8,6 +8,7 @@ import json
 import logging
 import sys
 from typing import Union
+import requests
 from .idmefv2client import IDMEFv2Client
 from .jsonconverter import JSONConverter
 from .filetailer import FileTailer
@@ -93,7 +94,10 @@ class Runner(abc.ABC):
         (converted, idmefv2_alert) = self.converter.convert(alert)
         if converted:
             self.logger.info("sending IDMEFv2 alert %s", str(idmefv2_alert))
-            self.idmefv2_client.post(idmefv2_alert)
+            try:
+                self.idmefv2_client.post(idmefv2_alert)
+            except requests.RequestException as e:
+                self.logger.error('POST failed with error %s', str(e))
 
     @abc.abstractmethod
     def run(self):
