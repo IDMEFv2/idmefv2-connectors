@@ -1,6 +1,6 @@
 [project]
 name = "idmefv2-connectors"
-version = "0.0.1"
+dynamic = ["version"]
 dependencies = [
     'inotify',
     "jsonpath_ng",
@@ -42,3 +42,5 @@ include-package-data = true
 [tool.setuptools.package-data]
 'idmefv2.connectors.suricata' = ["*.sample.conf"]
 'idmefv2.connectors.zabbix' = ["*.sample.conf"]
+
+[tool.setuptools_scm]
