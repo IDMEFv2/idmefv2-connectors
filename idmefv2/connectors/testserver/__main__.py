@@ -5,7 +5,7 @@ import argparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 import jsonschema
-import idmefv2
+from idmefv2.message import Message, SerializedMessage
 
 
 class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
@@ -54,8 +54,8 @@ class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
         status = 200
         response_data = None
         try:
-            payload = idmefv2.SerializedMessage('application/json', post_data)
-            idmefv2.Message.unserialize(payload)
+            payload = SerializedMessage('application/json', post_data)
+            Message.unserialize(payload)
         except jsonschema.exceptions.ValidationError as e:
             logging.error(e.message)
             status = 500
