@@ -57,7 +57,7 @@ class WazuhConverter(JSONConverter):
             "IP": "$.agent.ip",
             "Name": "$.agent.name",
             "Model": "Wazuh",
-            "Type": "Cyber",
+            "Type": ["Cyber"],
             "Category": [
                 "HIDS"
             ],
@@ -74,7 +74,7 @@ class WazuhConverter(JSONConverter):
                 "FileName": "$.syscheck.path",
                 "Hash": [
                     ((lambda h : 'sha-1:' + h), "$.syscheck.sha1_after"),
-                    ((lambda h : 'sha-256::' + h), "$.syscheck.sha256_after"),
+                    ((lambda h : 'sha-256:' + h), "$.syscheck.sha256_after"),
                 ],
                 "Size": (int, "$.syscheck.size_after"),
             },
