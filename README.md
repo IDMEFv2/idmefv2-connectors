@@ -23,7 +23,7 @@ Connectors main loop does the following:
 
 Conversion is handled by classes derived from `JSONConverter` class.
 
-The HTTP server to which the IDMEFv2 alert is uploaded can be either the HTTP test server provided in this repository or the Concerto SIEM (a fork of Prelude OSS), the first IDMEFv2-compatible SIEM (https://github.com/IDMEFv2/Concerto-SIEM )
+The HTTP server to which the IDMEFv2 alert is sent can be either the HTTP test server provided in this repository or the Concerto SIEM (a fork of Prelude OSS), the first IDMEFv2-compatible SIEM (https://github.com/IDMEFv2/Concerto-SIEM )
 
 ## Prerequisites
 
