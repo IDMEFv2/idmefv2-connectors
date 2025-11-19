@@ -10,7 +10,7 @@ Upon completion of a scan by `clamdscan`, the generated `metadata.json` will be 
 
 ## Configuration
 
-The connector uses a INI configuration file; a specific part for Clamav provides the location of the temporary directory where `metadata.json` files will be located.
+The connector uses a INI configuration file; a specific part for Clamav provides the location of the temporary directory where `metadata.json` files will be located. An example of configuration file is given in [clamav-idmefv2.sample.conf](./clamav-idmefv2.sample.conf).
 
 Example of Clamav connector configuration file:
 
