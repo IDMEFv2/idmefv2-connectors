@@ -5,15 +5,15 @@ This directory contains a Python implementation of the IDMEFv2 Zabbix (https://w
 
 ## Overview
 
-- **Zabbix compatibility**: requires Zabbix **7.2+**.  
-- **Two modes of operation**:  
-  - **Polling**: connector polls the Zabbix JSON-RPC API at regular intervals (configured via `poll_interval`), retrieves new problem objects, converts them to IDMEFv2, and POSTs to the target HTTP endpoint.  
+- **Zabbix compatibility**: requires Zabbix **7.2+**.
+- **Two modes of operation**:
+  - **Polling**: connector polls the Zabbix JSON-RPC API at regular intervals (configured via `poll_interval`), retrieves new problem objects, converts them to IDMEFv2, and POSTs to the target HTTP endpoint.
   - **Push**: connector runs an HTTP server on the address and port specified in the config. Zabbix can be configured to send alerts as a webhook (POST `/alert` with at least an `eventid` in the JSON). The connector enriches the payload via the Zabbix API (fetching timestamp, trigger details, host/interface info), converts it to IDMEFv2, and forwards it.
 
   To choose the mode (polling or push) simply modify the field in the .conf file.
   For detailed instructions on how to configure Zabbix to send alerts to the connector in push mode, including Media Type and Action setup, see (./ZABBIX_WEBHOOK_SETUP_README.md)
 
-## Running
+## Configuration
 
 The connector uses a configuration file parsed by Python’s `configparser` module. An example is provided in [zabbix-idmefv2.sample.conf](./zabbix-idmefv2.sample.conf).
 
@@ -40,8 +40,9 @@ poll_interval  = 30          # only in polling mode
 [idmefv2]
 # Destination for IDMEFv2 POSTs
 url            = http://127.0.0.1:9999
-
 ```
+
+## Running
 
 The `idmefv2.connectors.zabbix` Python module can be run directly. The only mandatory command line argument is the path of the configuration file.
 
