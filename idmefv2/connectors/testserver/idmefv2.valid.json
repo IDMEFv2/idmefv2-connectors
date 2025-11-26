@@ -1,0 +1,13 @@
+{
+  "Version" : "2.D.V04",
+  "ID" : "09db946e-673e-49af-b4b2-a8cd9da58de6",
+  "CreateTime" : "2021-11-22T14:42:51.881033Z",
+  "Analyzer" : {
+    "IP" : "127.0.0.1",
+    "Name" : "foobar",
+    "Model" : "generic",
+    "Category" : [ "LOG" ],
+    "Data" : [ "Log" ],
+    "Method" : [ "Monitor" ]
+  }
+}

@@ -12,7 +12,7 @@ Base classes for IDMEFv2 connectors implementations are provided:
 - [`FileTailer`](./idmefv2/connectors/filetailer.py): Python implementation of Unix 'tail -f'
 - [`IDMEFv2Client`](./idmefv2/connectors/idmefv2client.py): A HTTP client POSTing IDMEFv2 messages and logging response
 
-A HTTP test server is also available in [./idmefv2/connectors/testserver](./idmefv2/connectors/testserver/#overview)
+A HTTP test server is also available in [./idmefv2/connectors/testserver](./idmefv2/connectors/testserver/#overview). This test server can be useful to test a new connector (see [Testing a connnector](#testing-a-connector))
 
 ## Overview
 
@@ -79,7 +79,7 @@ It is also possible to install a specific release:
 pip install git+https://github.com/IDMEFv2/idmefv2-connectors@V0.0.2
 ```
 
-## Testing
+## Unit tests
 
 Python unit tests using [`pytest`](https://docs.pytest.org/en/stable/) are provided:
 
@@ -161,7 +161,11 @@ password = password
 
 See [./idmefv2/connectors/testserver](./idmefv2/connectors/testserver/#running)
 
-# Contributions
+## Testing a connector
+
+When testing a new connector, using the test server can be useful in order to debug and validate IDMEFv2 messages emited by the new connector. Details are provided in test server [README](./idmefv2/connectors/testserver/#testing-using-the-test-server).
+
+## Contributions
 
 All contributions must be licensed under the Apache 2.0 license. See the LICENSE file inside this repository for more information.
 
