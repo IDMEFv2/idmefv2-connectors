@@ -36,8 +36,6 @@ class Configuration:
         '''
         Main function:
             - read configuration file
-            - set logging level
-            - creates the IDMEFv2 HTTP client
         '''
         self.name = name
         options = self.parse_options(name)
