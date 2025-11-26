@@ -30,13 +30,13 @@ python3 -m idmefv2.connectors.testserver --port 9999 --log-level DEBUG
 
 Once the test server running (see above), IDMEFv2 messages can be sent to the server.
 
-Examples of sending HTTP POST requests with `curl` are provided below, with both invalid and valid messages. Corresponding data files are provided in this directory: [`./idmefv2.unvalid.json`](./idmefv2.unvalid.json) and [`./idmefv2.valid.json`](./idmefv2.valid.json).
+Examples of sending HTTP POST requests with `curl` are provided below, with both invalid and valid messages. Corresponding data files are provided in this directory: [`./idmefv2.invalid.json`](./idmefv2.invalid.json) and [`./idmefv2.valid.json`](./idmefv2.valid.json).
 
-**Sending an unvalid message**
+**Sending an invalid message**
 
 Curl:
 ```
-$ curl --verbose --data @idmefv2.bad.json --header "Content-Type: application/json" http://localhost:9999/
+$ curl --verbose --data @idmefv2.invalid.json --header "Content-Type: application/json" http://localhost:9999/
 * Host localhost:9999 was resolved.
 * IPv6: ::1
 * IPv4: 127.0.0.1
