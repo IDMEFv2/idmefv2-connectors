@@ -8,5 +8,5 @@ if __name__ == '__main__':
     opts = ConnectorArgumentParser('wazuh').parse_args()
     cfg = Configuration(opts)
     log_file_path = cfg.get('wazuh', 'logfile')
-    connector = LogFileConnector(cfg, WazuhConverter(), log_file_path)
+    connector = LogFileConnector('wazuh', cfg, WazuhConverter(), log_file_path)
     connector.run()

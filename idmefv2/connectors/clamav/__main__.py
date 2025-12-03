@@ -12,7 +12,7 @@ class ClamavConnector(Connector):
     Connector for clamav
     '''
     def __init__(self, cfg: Configuration):
-        super().__init__(cfg, ClamavConverter())
+        super().__init__('clamav', cfg, ClamavConverter())
         self._tempdir = cfg.get("clamav", "tempdir")
 
     def run(self):

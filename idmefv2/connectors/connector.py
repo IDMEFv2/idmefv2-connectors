@@ -42,7 +42,7 @@ class Connector(abc.ABC):
     Base class for connectors
     '''
 
-    def __init__(self, cfg: Configuration, converter: JSONConverter):
+    def __init__(self, name: str, cfg: Configuration, converter: JSONConverter):
         '''
         Main function:
             - set logging level
@@ -50,7 +50,7 @@ class Connector(abc.ABC):
         '''
         level = cfg.get('logging', 'level', fallback='INFO')
         logging.basicConfig(level=level)
-        self.logger = logging.getLogger(cfg.name + '-connector')
+        self.logger = logging.getLogger(name + '-connector')
 
         url = cfg.get('idmefv2', 'url')
         login = cfg.get('idmefv2', 'login', fallback=None)
@@ -93,14 +93,14 @@ class LogFileConnector(Connector):
     '''
     Runner for log file
     '''
-    def __init__(self, cfg: Configuration, converter: JSONConverter, log_file_path: str):
+    def __init__(self, name: str, cfg: Configuration, converter: JSONConverter, log_file_path: str):
         '''
         Main function:
             - read configuration file
             - set logging level
             - creates the IDMEFv2 HTTP client
         '''
-        super().__init__(cfg, converter)
+        super().__init__(name, cfg, converter)
         self.log_file_path = log_file_path
 
     def run(self):
