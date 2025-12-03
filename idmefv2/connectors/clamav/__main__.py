@@ -4,15 +4,15 @@ Main for Clamav connector
 
 import os.path
 import inotify.adapters
-from ..connector import Configuration, Runner
+from ..connector import ConnectorArgumentParser, Configuration, Connector
 from .clamavconverter import ClamavConverter
 
-class ClamavRunner(Runner):
+class ClamavConnector(Connector):
     '''
-    Connector runner for clamav
+    Connector for clamav
     '''
-    def __init__(self, cfg: Configuration, converter: ClamavConverter):
-        super().__init__(cfg, converter)
+    def __init__(self, cfg: Configuration):
+        super().__init__(cfg, ClamavConverter())
         self._tempdir = cfg.get("clamav", "tempdir")
 
     def run(self):
@@ -35,6 +35,7 @@ class ClamavRunner(Runner):
 
 
 if __name__ == "__main__":
-    clamav_cfg = Configuration("clamav")
-    runner = ClamavRunner(clamav_cfg, ClamavConverter())
-    runner.run()
+    opts = ConnectorArgumentParser('clamav').parse_args()
+    clamav_cfg = Configuration(opts)
+    connector = ClamavConnector(clamav_cfg)
+    connector.run()

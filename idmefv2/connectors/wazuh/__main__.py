@@ -2,10 +2,11 @@
 Main for Wazuh connector
 '''
 from .wazuhconverter import WazuhConverter
-from ..connector import Configuration, LogFileRunner
+from ..connector import ConnectorArgumentParser, Configuration, LogFileConnector
 
 if __name__ == '__main__':
-    cfg = Configuration('wazuh')
+    opts = ConnectorArgumentParser('wazuh').parse_args()
+    cfg = Configuration(opts)
     log_file_path = cfg.get('wazuh', 'logfile')
-    runner = LogFileRunner(cfg, WazuhConverter(), log_file_path)
-    runner.run()
+    connector = LogFileConnector(cfg, WazuhConverter(), log_file_path)
+    connector.run()
