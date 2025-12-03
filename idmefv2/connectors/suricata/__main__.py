@@ -58,7 +58,7 @@ class SuricataUnixSocketConnector(Connector, socketserver.UnixStreamServer):
     Connector runner for Unix socket
     '''
     def __init__(self, cfg: Configuration, converter: JSONConverter, socket_path: str):
-        super(Connector).__init__(cfg, converter)
+        super(Connector).__init__('suricata', cfg, converter)
         super(socketserver.UnixStreamServer).__init__(socket_path, EVEStreamRequestHandler)
         self._socket_path = socket_path
 
@@ -75,5 +75,5 @@ if __name__ == '__main__':
         connector = SuricataUnixSocketConnector(suricata_cfg, suricata_converter, suricata_filename)
         connector.run()
     elif suricata_filetype == 'regular':
-        connector = LogFileConnector(suricata_cfg, suricata_converter, suricata_filename)
+        connector = LogFileConnector('suricata', suricata_cfg, suricata_converter, suricata_filename)
         connector.run()

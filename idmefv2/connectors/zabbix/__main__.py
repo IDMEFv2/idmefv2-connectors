@@ -22,7 +22,7 @@ log = logging.getLogger("zabbix-connector")
 class PollingConnector(Connector):
     """Periodically executes a polling of the events from Zabbix and sends them."""
     def __init__(self, cfg: Configuration, converter: ZabbixConverter):
-        super().__init__(cfg, converter)
+        super().__init__("zabbix", cfg, converter)
 
         auth = ZabbixAuth(
             url=cfg.get("zabbix", "url"),
@@ -44,7 +44,7 @@ class PollingConnector(Connector):
 class PushConnector(Connector):
     """Starts an HTTP server to receive events from Zabbix and send them."""
     def __init__(self, cfg: Configuration, converter: ZabbixConverter):
-        super().__init__(cfg, converter)
+        super().__init__("zabbix", cfg, converter)
 
         zbx_url = cfg.get("zabbix", "url")
         zbx_user = cfg.get("zabbix", "user")
@@ -85,7 +85,7 @@ class PushConnector(Connector):
 
 def main():
     """Chooses the correct execution mode based on the configuration the user provides."""
-    opts = ConnectorArgumentParser('zabbix').parse_args()
+    opts = ConnectorArgumentParser("zabbix").parse_args()
     cfg = Configuration(opts)
     mode = cfg.get("connector", "mode", fallback="polling").lower()
     if mode not in ("polling", "push"):
