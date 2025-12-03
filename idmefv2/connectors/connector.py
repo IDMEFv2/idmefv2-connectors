@@ -2,7 +2,7 @@
 Base connector
 '''
 import abc
-import argparse
+from argparse import ArgumentParser, Namespace
 from configparser import ConfigParser
 import json
 import logging
@@ -13,51 +13,33 @@ from .idmefv2client import IDMEFv2Client
 from .jsonconverter import JSONConverter
 from .filetailer import FileTailer
 
-class Configuration:
+class ConnectorArgumentParser(ArgumentParser):
+    '''
+    Base class for connector command line argument parsing:
+        - add -c/--conf option to give configuration file
+    '''
+    def __init__(self, name: str):
+        description = f"Launch the {name.capitalize()} to IDMEFv2 connector"
+        super().__init__(description=description)
+        self.add_argument('-c', '--conf', help='give configuration file', dest='conf_file')
+
+class Configuration(ConfigParser):
     '''
     Base class for connectors configuration:
-        - parse command line
         - read configuration file
     '''
 
-    def parse_options(self, name: str):
+    def __init__(self, opts: Namespace):
         '''
-        Parse command line options
-
-        Returns:
-            Namespace: parsed command line options
-        '''
-        description = f"Launch the {name.capitalize()} to IDMEFv2 connector"
-        parser = argparse.ArgumentParser(description=description)
-        parser.add_argument('-c', '--conf', help='give configuration file', dest='conf_file')
-        return parser.parse_args()
-
-    def __init__(self, name: str):
-        '''
-        Main function:
+        Constructor:
             - read configuration file
         '''
-        self.name = name
-        options = self.parse_options(name)
-        self._config = ConfigParser()
-        self._config.read(options.conf_file)
+        super().__init__()
+        self.read(opts.conf_file)
 
-    def get(self, section: str, option: str, **kwargs):
-        '''
-        Returns configuration element
-
-        Args:
-            section (str): the configuration section
-            option (str): the configuration option
-
-        Returns:
-            the corresponding value if exists, fallback if not
-        '''
-        return self._config.get(section, option, **kwargs)
-
-class Runner(abc.ABC):
+class Connector(abc.ABC):
     '''
-    Base class for running connectors
+    Base class for connectors
     '''
 
     def __init__(self, cfg: Configuration, converter: JSONConverter):
@@ -107,7 +89,7 @@ class Runner(abc.ABC):
         '''
         raise NotImplementedError
 
-class LogFileRunner(Runner):
+class LogFileConnector(Connector):
     '''
     Runner for log file
     '''
