@@ -59,7 +59,7 @@ class Connector(abc.ABC):
 
         self.converter = converter
 
-    def alert(self, b: Union[str,bytes]):
+    def alert(self, a: Union[str, bytes, dict]):
         '''
         Process an alert:
             - converts parameter to JSON
@@ -67,10 +67,13 @@ class Connector(abc.ABC):
             - if alert was converted, send it to IDMEFv2 server
 
         Args:
-            b (Union[str,bytes]): the origin alert
+            a (Union[str,bytes,dict]): the origin alert
         '''
-        self.logger.debug("received %s", b)
-        alert = json.loads(b)
+        self.logger.debug("received %s", a)
+        if isinstance(a, (str, bytes)):
+            alert = json.loads(a)
+        else:
+            alert = a
         (converted, idmefv2_alert) = self.converter.convert(alert)
         if converted:
             self.logger.info("sending IDMEFv2 alert %s", str(idmefv2_alert))
