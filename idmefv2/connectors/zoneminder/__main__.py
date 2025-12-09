@@ -10,9 +10,15 @@ class ZoneminderConnector(Connector):
     '''
     Connector for zoneminder
     '''
-    def __init__(self, cfg: Configuration, event: dict):
+    def __init__(self, cfg: Configuration, args: list):
         super().__init__('zoneminder', cfg, ZoneminderConverter())
-        self._event = event
+        self.logger.debug("zoneminder connector args %s", str(args))
+        if args is None or len(args) < 2 or len(args) % 2 != 0:
+            self.logger.fatal('malformed positional arguments')
+            sys.exit(1)
+        # create a dict out of positional arguments:
+        # https://stackoverflow.com/questions/6900955/convert-list-into-a-dictionary
+        self._event = dict(zip(args[::2], args[1::2]))
 
     def run(self):
         # Connector process one event at a time and does not loop on events
@@ -24,12 +30,7 @@ if __name__ == "__main__":
                                  help='list of pairs (zoneminder tag name + tag value',
                                  default=None)
     opts = argument_parser.parse_args()
-    if opts.args is None or len(opts.args) < 2 or len(opts.args) % 2 != 0:
-        argument_parser.print_help(sys.stderr)
-        sys.exit(1)
     zoneminder_cfg = Configuration(opts)
-    # create a dict out of positional arguments:
-    # https://stackoverflow.com/questions/6900955/convert-list-into-a-dictionary
-    zoneminder_event = dict(zip(opts.args[::2], opts.args[1::2]))
-    connector = ZoneminderConnector(zoneminder_cfg, zoneminder_event)
+    connector = ZoneminderConnector(zoneminder_cfg, opts.args)
     connector.run()
+    sys.exit(0)
