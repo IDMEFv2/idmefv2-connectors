@@ -21,7 +21,7 @@ class ConnectorArgumentParser(ArgumentParser):
     def __init__(self, name: str):
         description = f"Launch the {name.capitalize()} to IDMEFv2 connector"
         super().__init__(description=description)
-        self.add_argument('-c', '--conf', help='give configuration file', dest='conf_file')
+        self.add_argument('-c', '--conf', help='give configuration file', dest='conf_file', required=True)
 
 class Configuration(ConfigParser):
     '''
@@ -49,8 +49,13 @@ class Connector(abc.ABC):
             - creates the IDMEFv2 HTTP client
         '''
         level = cfg.get('logging', 'level', fallback='INFO')
-        logging.basicConfig(level=level)
+        log_file = cfg.get('logging', 'file', fallback=None)
+        if log_file is not None:
+            logging.basicConfig(level=level, filename=log_file)
+        else:
+            logging.basicConfig(level=level)
         self.logger = logging.getLogger(name + '-connector')
+        self.logger.info("%s connector started", name)
 
         url = cfg.get('idmefv2', 'url')
         login = cfg.get('idmefv2', 'login', fallback=None)
