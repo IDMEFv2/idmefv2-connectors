@@ -13,16 +13,21 @@ class ZoneminderConnector(Connector):
     def __init__(self, cfg: Configuration, args: list):
         super().__init__('zoneminder', cfg, ZoneminderConverter())
         self.logger.debug("zoneminder connector args %s", str(args))
-        if args is None or len(args) < 2 or len(args) % 2 != 0:
+        if args is None or len(args) < 2 or len(args) % 2 != 1:
             self.logger.fatal('malformed positional arguments')
             sys.exit(1)
         # create a dict out of positional arguments:
         # https://stackoverflow.com/questions/6900955/convert-list-into-a-dictionary
-        self._event = dict(zip(args[::2], args[1::2]))
+        event_args = args[:-1]
+        self._event = dict(zip(event_args[::2], event_args[1::2]))
 
     def run(self):
+        # pylint: disable=broad-exception-caught
         # Connector process one event at a time and does not loop on events
-        self.alert(self._event)
+        try:
+            self.alert(self._event)
+        except Exception as e:
+            self.logger.exception(e, stack_info=True)
 
 if __name__ == "__main__":
     argument_parser = ConnectorArgumentParser('zoneminder')
