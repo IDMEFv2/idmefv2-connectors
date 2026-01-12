@@ -21,7 +21,8 @@ class ConnectorArgumentParser(ArgumentParser):
     def __init__(self, name: str):
         description = f"Launch the {name.capitalize()} to IDMEFv2 connector"
         super().__init__(description=description)
-        self.add_argument('-c', '--conf', help='give configuration file', dest='conf_file', required=True)
+        self.add_argument('-c', '--conf', help='give configuration file', dest='conf_file',
+                          required=True)
 
 class Configuration(ConfigParser):
     '''
