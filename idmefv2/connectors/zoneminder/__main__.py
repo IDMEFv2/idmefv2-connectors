@@ -20,6 +20,7 @@ class ZoneminderConnector(Connector):
         # https://stackoverflow.com/questions/6900955/convert-list-into-a-dictionary
         event_args = args[:-1]
         self._event = dict(zip(event_args[::2], event_args[1::2]))
+        self._event["EFILE"] = args[-1]
 
     def run(self):
         # pylint: disable=broad-exception-caught
