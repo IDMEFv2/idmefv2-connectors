@@ -1,7 +1,7 @@
 '''
 The zoneminder to IDMEFv2 convertor.
 '''
-from datetime import datetime
+import re
 from ..jsonconverter import JSONConverter
 from ..idmefv2funs import idmefv2_uuid
 
@@ -13,8 +13,15 @@ from ..idmefv2funs import idmefv2_uuid
 # https://zoneminder.readthedocs.io/en/stable/userguide/filterevents.html
 #
 
-def _create_time():
-    return datetime.now().astimezone().isoformat()
+def _fix_zoneminder_date(zm_date: str) -> str:
+    pat = r"([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})"
+    m = re.match(pat, zm_date)
+    if m is None:
+        return "1970-01-01T00:00:00"
+    return m.group(1) + "T" + m.group(2)
+
+def _make_description(d: str, m: str) -> str:
+    return f"Event {d} on monitor {m}"
 
 # pylint: disable=too-few-public-methods
 class ZoneminderConverter(JSONConverter):
@@ -26,10 +33,10 @@ class ZoneminderConverter(JSONConverter):
     IDMEFV2_TEMPLATE = {
         'Version': '2.D.V04',
         'ID': idmefv2_uuid,
-        'CreateTime': '$.ET',
+        'CreateTime': (_fix_zoneminder_date, '$.ET'),
         'Category': ['Intrusion.Burglary'],
         'Priority': 'High',
-        'Description' : '$.ED',
+        'Description' : (_make_description, '$.ED', "$.MN"),
         "Analyzer": {
             "IP": "127.0.0.1",
             "Name": "zoneminder",
@@ -44,6 +51,12 @@ class ZoneminderConverter(JSONConverter):
                 "Movement"
             ]
         },
+        "Attachment": [
+            {
+                "Name": "EventFilePath",
+                "FileName": "$.EFILE",
+            }
+        ]
     }
 
     def __init__(self):
