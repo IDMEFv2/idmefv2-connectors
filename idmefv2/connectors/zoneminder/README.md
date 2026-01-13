@@ -28,7 +28,19 @@ url = http://testserver.idmefv2:9999
 ```
 ### Zoneminder configuration
 
-Once a monitor defined in zoneminder, its function must be set to `Modect` in order to enable motion detection.
+Once a monitor defined in zoneminder, its function must be set to `Modect` in order to enable motion detection:
+
+<img width="985" height="402" alt="image" src="https://github.com/user-attachments/assets/ecba7733-5311-4c2c-b12d-760a24fb14d7" />
+
+Zones can be defined on this monitor:
+
+<img width="1905" height="874" alt="image" src="https://github.com/user-attachments/assets/3fea502b-291b-4c6a-a37b-e64021d42bf2" />
+
+A filter must then be added for motion detection events:
+<img width="1907" height="744" alt="image" src="https://github.com/user-attachments/assets/aa6f3b8b-2ec3-414a-8072-d2a799364b29" />
+
+Filter definition must include:
+
 
 ## Running
 
