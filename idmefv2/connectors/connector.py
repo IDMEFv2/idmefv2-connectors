@@ -58,10 +58,7 @@ class Connector(abc.ABC):
         self.logger = logging.getLogger(name + '-connector')
         self.logger.info("%s connector started", name)
 
-        url = cfg.get('idmefv2', 'url')
-        login = cfg.get('idmefv2', 'login', fallback=None)
-        password = cfg.get('idmefv2', 'password', fallback=None)
-        self.idmefv2_client = IDMEFv2Client(url=url, login=login, password=password)
+        self.idmefv2_client = IDMEFv2Client(cfg)
 
         self.converter = converter
 
