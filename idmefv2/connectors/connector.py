@@ -2,7 +2,7 @@
 Base connector
 '''
 import abc
-import argparse
+from argparse import ArgumentParser, Namespace
 from configparser import ConfigParser
 import json
 import logging
@@ -13,62 +13,50 @@ from .idmefv2client import IDMEFv2Client
 from .jsonconverter import JSONConverter
 from .filetailer import FileTailer
 
-class Configuration:
+class ConnectorArgumentParser(ArgumentParser):
+    '''
+    Base class for connector command line argument parsing:
+        - add -c/--conf option to give configuration file
+    '''
+    def __init__(self, name: str):
+        description = f"Launch the {name.capitalize()} to IDMEFv2 connector"
+        super().__init__(description=description)
+        self.add_argument('-c', '--conf', help='give configuration file', dest='conf_file',
+                          required=True)
+
+class Configuration(ConfigParser):
     '''
     Base class for connectors configuration:
-        - parse command line
         - read configuration file
     '''
 
-    def parse_options(self, name: str):
+    def __init__(self, opts: Namespace):
         '''
-        Parse command line options
-
-        Returns:
-            Namespace: parsed command line options
-        '''
-        description = f"Launch the {name.capitalize()} to IDMEFv2 connector"
-        parser = argparse.ArgumentParser(description=description)
-        parser.add_argument('-c', '--conf', help='give configuration file', dest='conf_file')
-        return parser.parse_args()
-
-    def __init__(self, name: str):
-        '''
-        Main function:
+        Constructor:
             - read configuration file
         '''
-        self.name = name
-        options = self.parse_options(name)
-        self._config = ConfigParser()
-        self._config.read(options.conf_file)
+        super().__init__()
+        self.read(opts.conf_file)
 
-    def get(self, section: str, option: str, **kwargs):
-        '''
-        Returns configuration element
-
-        Args:
-            section (str): the configuration section
-            option (str): the configuration option
-
-        Returns:
-            the corresponding value if exists, fallback if not
-        '''
-        return self._config.get(section, option, **kwargs)
-
-class Runner(abc.ABC):
+class Connector(abc.ABC):
     '''
-    Base class for running connectors
+    Base class for connectors
     '''
 
-    def __init__(self, cfg: Configuration, converter: JSONConverter):
+    def __init__(self, name: str, cfg: Configuration, converter: JSONConverter):
         '''
         Main function:
             - set logging level
             - creates the IDMEFv2 HTTP client
         '''
         level = cfg.get('logging', 'level', fallback='INFO')
-        logging.basicConfig(level=level)
-        self.logger = logging.getLogger(cfg.name + '-connector')
+        log_file = cfg.get('logging', 'file', fallback=None)
+        if log_file is not None:
+            logging.basicConfig(level=level, filename=log_file)
+        else:
+            logging.basicConfig(level=level)
+        self.logger = logging.getLogger(name + '-connector')
+        self.logger.info("%s connector started", name)
 
         url = cfg.get('idmefv2', 'url')
         login = cfg.get('idmefv2', 'login', fallback=None)
@@ -77,7 +65,7 @@ class Runner(abc.ABC):
 
         self.converter = converter
 
-    def alert(self, b: Union[str,bytes]):
+    def alert(self, a: Union[str, bytes, dict]):
         '''
         Process an alert:
             - converts parameter to JSON
@@ -85,10 +73,13 @@ class Runner(abc.ABC):
             - if alert was converted, send it to IDMEFv2 server
 
         Args:
-            b (Union[str,bytes]): the origin alert
+            a (Union[str,bytes,dict]): the origin alert
         '''
-        self.logger.debug("received %s", b)
-        alert = json.loads(b)
+        self.logger.debug("received %s", a)
+        if isinstance(a, (str, bytes)):
+            alert = json.loads(a)
+        else:
+            alert = a
         (converted, idmefv2_alert) = self.converter.convert(alert)
         if converted:
             self.logger.info("sending IDMEFv2 alert %s", str(idmefv2_alert))
@@ -107,18 +98,18 @@ class Runner(abc.ABC):
         '''
         raise NotImplementedError
 
-class LogFileRunner(Runner):
+class LogFileConnector(Connector):
     '''
     Runner for log file
     '''
-    def __init__(self, cfg: Configuration, converter: JSONConverter, log_file_path: str):
+    def __init__(self, name: str, cfg: Configuration, converter: JSONConverter, log_file_path: str):
         '''
         Main function:
             - read configuration file
             - set logging level
             - creates the IDMEFv2 HTTP client
         '''
-        super().__init__(cfg, converter)
+        super().__init__(name, cfg, converter)
         self.log_file_path = log_file_path
 
     def run(self):

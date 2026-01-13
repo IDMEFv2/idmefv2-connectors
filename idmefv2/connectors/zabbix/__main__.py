@@ -2,7 +2,7 @@
 Main module of the Zabbix-IDMEFv2 Connector.
 
 Contains the program's entripoint, with two modes of operation:
-- polling: Automatic scheduled execution 
+- polling: Automatic scheduled execution
 - push: Starts an HTTP server to receive the alerts from Zabbix
 """
 
@@ -13,16 +13,16 @@ from http.server import HTTPServer
 from .push import ZabbixPushHelper, PushHandler
 from .poller import ZabbixPoller
 from .zabbixconverter import ZabbixConverter
-from ..connector import Configuration, Runner
+from ..connector import ConnectorArgumentParser, Configuration, Connector
 from .models import ZabbixAuth
 
 
 log = logging.getLogger("zabbix-connector")
 
-class PollingRunner(Runner):
+class PollingConnector(Connector):
     """Periodically executes a polling of the events from Zabbix and sends them."""
     def __init__(self, cfg: Configuration, converter: ZabbixConverter):
-        super().__init__(cfg, converter)
+        super().__init__("zabbix", cfg, converter)
 
         auth = ZabbixAuth(
             url=cfg.get("zabbix", "url"),
@@ -41,10 +41,10 @@ class PollingRunner(Runner):
         self.logger.info("Starting polling runner")
         self.poller.run()
 
-class PushRunner(Runner):
+class PushConnector(Connector):
     """Starts an HTTP server to receive events from Zabbix and send them."""
     def __init__(self, cfg: Configuration, converter: ZabbixConverter):
-        super().__init__(cfg, converter)
+        super().__init__("zabbix", cfg, converter)
 
         zbx_url = cfg.get("zabbix", "url")
         zbx_user = cfg.get("zabbix", "user")
@@ -72,7 +72,7 @@ class PushRunner(Runner):
 
     def run(self):
         self.logger.info(
-            "HTTP server listening on %s:%d/alert", 
+            "HTTP server listening on %s:%d/alert",
             self.listen_address,
             self.listen_port
             )
@@ -85,18 +85,18 @@ class PushRunner(Runner):
 
 def main():
     """Chooses the correct execution mode based on the configuration the user provides."""
-    cfg = Configuration("zabbix")
+    opts = ConnectorArgumentParser("zabbix").parse_args()
+    cfg = Configuration(opts)
     mode = cfg.get("connector", "mode", fallback="polling").lower()
     if mode not in ("polling", "push"):
         raise ValueError("Mode must be either 'polling' or 'push'")
 
     converter = ZabbixConverter([mode])
     if mode == "polling":
-        runner = PollingRunner(cfg, converter)
+        connector = PollingConnector(cfg, converter)
     else:
-        runner = PushRunner(cfg, converter)
-    runner.run()
-
+        connector = PushConnector(cfg, converter)
+    connector.run()
 
 if __name__ == "__main__":
     main()
