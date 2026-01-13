@@ -63,6 +63,7 @@ class ZoneminderConverter(JSONConverter):
             {
                 "Name": "EventFilePath",
                 "FileName": "$.EFILE",
+                "ContentType": "image/jpeg",
                 "ContentEncoding": "base64",
                 "Content": (_make_snapshot_base64, "$.EFILE")
             }
