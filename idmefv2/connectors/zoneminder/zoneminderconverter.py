@@ -2,6 +2,7 @@
 The zoneminder to IDMEFv2 convertor.
 '''
 import re
+import base64
 from ..jsonconverter import JSONConverter
 from ..idmefv2funs import idmefv2_uuid
 
@@ -22,6 +23,13 @@ def _fix_zoneminder_date(zm_date: str) -> str:
 
 def _make_description(d: str, m: str) -> str:
     return f"Event {d} on monitor {m}"
+
+def _make_snapshot_base64(path: str) -> str:
+    with open(path + "/snapshot.jpg", 'rb') as binary_file:
+        binary_file_data = binary_file.read()
+        base64_encoded_data = base64.b64encode(binary_file_data)
+        base64_output = base64_encoded_data.decode('ascii')
+        return base64_output
 
 # pylint: disable=too-few-public-methods
 class ZoneminderConverter(JSONConverter):
@@ -55,6 +63,8 @@ class ZoneminderConverter(JSONConverter):
             {
                 "Name": "EventFilePath",
                 "FileName": "$.EFILE",
+                "ContentEncoding": "base64",
+                "Content": (_make_snapshot_base64, "$.EFILE")
             }
         ]
     }
