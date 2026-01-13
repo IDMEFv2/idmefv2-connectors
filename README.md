@@ -5,6 +5,7 @@ This repository contains Python implementations of IDMEFv2 connectors for variou
 - Suricata NIDS (https://suricata.io/): see [./idmefv2/connectors/suricata](./idmefv2/connectors/suricata/#overview)
 - Wazuh (https://wazuh.com/): see [./idmefv2/connectors/wazuh](./idmefv2/connectors/wazuh/#overview)
 - Zabbix (https://www.zabbix.com): see [./idmefv2/connectors/zabbix](./idmefv2/connectors/zabbix/#overview)
+- Zoneminder (https://zoneminder.com): see [./idmefv2/connectors/zoneminder](./idmefv2/connectors/zoneminder/#overview)
 
 Base classes for IDMEFv2 connectors implementations are provided:
 
@@ -147,6 +148,7 @@ password = password
 * Suricata connector: see [./idmefv2/connectors/suricata](./idmefv2/connectors/suricata/#configuration)
 * Wazuh connector: see [./idmefv2/connectors/wazuh](./idmefv2/connectors/wazuh/#configuration)
 * Zabbix connector: see [./idmefv2/connectors/zabbix](./idmefv2/connectors/zabbix/#configuration)
+* Zoneminder connector: see [./idmefv2/connectors/zoneminder](./idmefv2/connectors/zoneminder/#configuration)
 
 ## Running
 
@@ -156,6 +158,7 @@ password = password
 * Suricata connector: see [./idmefv2/connectors/suricata](./idmefv2/connectors/suricata/#running)
 * Wazuh connector: see [./idmefv2/connectors/wazuh](./idmefv2/connectors/wazuh/#running)
 * Zabbix connector: see [./idmefv2/connectors/zabbix](./idmefv2/connectors/zabbix/#running)
+* Zoneminder connector: see [./idmefv2/connectors/zoneminder](./idmefv2/connectors/zoneminder/#running)
 
 ### Running the test server
 
