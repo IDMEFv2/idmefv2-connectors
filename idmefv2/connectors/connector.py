@@ -2,13 +2,13 @@
 Base connector
 '''
 import abc
-from argparse import ArgumentParser, Namespace
-from configparser import ConfigParser
+from argparse import ArgumentParser
 import json
 import logging
 import sys
 from typing import Union
 import requests
+from .configuration import Configuration
 from .idmefv2client import IDMEFv2Client
 from .jsonconverter import JSONConverter
 from .filetailer import FileTailer
@@ -23,20 +23,6 @@ class ConnectorArgumentParser(ArgumentParser):
         super().__init__(description=description)
         self.add_argument('-c', '--conf', help='give configuration file', dest='conf_file',
                           required=True)
-
-class Configuration(ConfigParser):
-    '''
-    Base class for connectors configuration:
-        - read configuration file
-    '''
-
-    def __init__(self, opts: Namespace):
-        '''
-        Constructor:
-            - read configuration file
-        '''
-        super().__init__()
-        self.read(opts.conf_file)
 
 class Connector(abc.ABC):
     '''

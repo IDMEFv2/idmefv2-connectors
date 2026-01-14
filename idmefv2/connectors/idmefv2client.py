@@ -2,7 +2,7 @@
 A HTTP client POSTing IDMEFv2 messages and logging response
 '''
 import requests
-from .connector import Configuration
+from .configuration import Configuration
 
 # pylint: disable=too-few-public-methods
 class IDMEFv2Client:
