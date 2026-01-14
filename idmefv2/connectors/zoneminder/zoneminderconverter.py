@@ -61,11 +61,14 @@ class ZoneminderConverter(JSONConverter):
         },
         "Attachment": [
             {
-                "Name": "EventFilePath",
-                "FileName": "$.EFILE",
+                "Name": "EventDirectoryPath",
+                "FileName": "$.EDP",
+            },
+            {
+                "Name": "EventSnapshotImage",
                 "ContentType": "image/jpeg",
                 "ContentEncoding": "base64",
-                "Content": (_make_snapshot_base64, "$.EFILE")
+                "Content": (_make_snapshot_base64, "$.EDP")
             }
         ]
     }
