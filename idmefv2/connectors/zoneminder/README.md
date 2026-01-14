@@ -6,7 +6,7 @@ This directory contains Python implementation of IDMEFv2 zoneminder (https://zon
 
 The zoneminder connector generates a IDMEFv2 message when a motion detection event is detected by zoneminder.
 
-The connector is executed by zoneminder as a *filter* (see https://zoneminder.readthedocs.io/en/stable/userguide/filterevents.html).
+The connector uses a *filter* shell script helper (see https://zoneminder.readthedocs.io/en/stable/userguide/filterevents.html).
 
 
 ## Configuration
