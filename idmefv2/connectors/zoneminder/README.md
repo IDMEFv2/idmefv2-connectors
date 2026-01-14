@@ -38,7 +38,7 @@ Zones can be defined on this monitor:
 <img width="1905" height="874" alt="image" src="https://github.com/user-attachments/assets/3fea502b-291b-4c6a-a37b-e64021d42bf2" />
 
 A filter must then be added for motion detection events:
-<img width="1907" height="744" alt="image" src="https://github.com/user-attachments/assets/aa6f3b8b-2ec3-414a-8072-d2a799364b29" />
+<img width="1907" height="744" alt="image" src="https://github.com/user-attachments/assets/5dffb675-2f78-4248-99ae-231ad358c7ff" />
 
 Filter definition must include:
 1. a name
