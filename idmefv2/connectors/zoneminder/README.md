@@ -60,7 +60,7 @@ The command line arguments are defined in note *More details on filter condition
 
 The path to the event directory will be automatically added by zoneminder.
 
-The `zm2json.sh`script appends to a log file a JSON object containing a subset of event data. This log file will be "tailed" by the IDMEFv2 connector.
+The [`zm2json.sh`](./zm2json.sh) script appends to a log file a JSON object containing a subset of event data. This log file will be "tailed" by the IDMEFv2 connector.
 
 ## Running
 
