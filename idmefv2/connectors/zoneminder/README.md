@@ -20,12 +20,15 @@ Example of zoneminder connector configuration file:
 # Logging level: change to DEBUG for more information, INFO for less information
 level = DEBUG
 # level = INFO
-file=/var/log/idmefv2/zoneminder-connector.log
 
 [idmefv2]
 # URL of server to POST IDMEFv2 alerts
 url = http://testserver.idmefv2:9999
+
+[zmjson]
+logfile=/var/log/zmjson/events.json
 ```
+
 ### Zoneminder configuration
 
 Once a monitor defined in zoneminder, its function must be set to `Modect` in order to enable motion detection:
@@ -42,12 +45,12 @@ Filter definition must include:
 2. Condition: `Alarmed Zone`
 3. `equald to`
 4. the zone previously defined
-5. Execute command on all matches: `/usr/bin/python3 -m idmefv2.connectors.zoneminder -c /etc/zoneminder-idmefv2.conf ET "%ET%" ED "%ED%" MN "%MN%"`
+5. Execute command on all matches: `/zm2json.sh /var/log/zmjson/events.json "%ET%" "%ED%" "%MN%"`
 6. Run filter in background
 
 The command to execute is the following:
 ``` sh
-/usr/bin/python3 -m idmefv2.connectors.zoneminder -c /etc/zoneminder-idmefv2.conf ET "%ET%" ED "%ED%" MN "%MN%"
+/zm2json.sh /var/log/zmjson/events.json "%ET%" "%ED%" "%MN%"
 ```
 
 The command line arguments are defined in note *More details on filter conditions:* in https://zoneminder.readthedocs.io/en/stable/userguide/filterevents.html#
@@ -57,15 +60,36 @@ The command line arguments are defined in note *More details on filter condition
 
 The path to the event directory will be automatically added by zoneminder.
 
+The `zm2json.sh`script appends to a log file a JSON object containing a subset of event data. This log file will be "tailed" by the IDMEFv2 connector.
+
 ## Running
 
-The `idmefv2.connectors.zoneminder` Python module will be run directly by zoneminder when a motion detection event is triggered.
+The `idmefv2.connectors.zoneminder` Python module can be run directly. The only mandatory command line argument is the path of the configuration file.
+
+``` sh
+python3 -m idmefv2.connectors.zoneminder -c /etc/zoneminder-idmefv2.conf
+```
 
 Below is an example of the log of a IDMEFv2 message generation for a motion detection event:
 ``` sh
 INFO:zoneminder-connector:zoneminder connector started
-DEBUG:zoneminder-connector:zoneminder connector args ['ET', '2026-01-13 11:35:11', 'ED', 'Motion: Plafond', 'MN', 'Monitor-1', '/var/cache/zoneminder/events/1/2026-01-13/413']
-DEBUG:zoneminder-connector:received {'ET': '2026-01-13 11:35:11', 'ED': 'Motion: Plafond', 'MN': 'Monitor-1', 'EFILE': '/var/cache/zoneminder/events/1/2026-01-13/413'}
-INFO:zoneminder-connector:sending IDMEFv2 alert {'Version': '2.D.V04', 'ID': 'cd2935fc-0741-4af6-8a20-78df487768ce', 'CreateTime': '2026-01-13T11:35:11', 'Category': ['Intrusion.Burglary'], 'Priority': 'High', 'Description': 'Event Motion: Plafond on monitor Monitor-1', 'Analyzer': {'IP': '127.0.0.1', 'Name': 'zoneminder', 'Model': 'Zoneminder video surveillance system', 'Category': ['ODC'], 'Data': ['Images'], 'Method': ['Movement']}, 'Attachment': [{'Name': 'EventFilePath', 'FileName': '/var/cache/zoneminder/events/1/2026-01-13/413', 'ContentEncoding': 'base64', 'Content': '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQ[... base64 content truncated ...]x6U2eXcx+bPvUtk6jrnGe1IZ/9k='}]}
+INFO:zoneminder-connector:Tailing from file /var/log/zmjson/events.json
+DEBUG:inotify.adapters:Inotify handle is (3).
+DEBUG:inotify.adapters:Adding watch: [/var/log/zmjson/events.json]
+DEBUG:inotify.adapters:Added watch (1): [/var/log/zmjson/events.json]
+
+Freshening configuration in database
+Migratings passwords, if any...
+Loading config from DB 227 entries
+Saving config to DB 227 entries
+starting zm package scripts
+starting apache
+DEBUG:inotify.adapters:Events received from epoll: ['IN_ACCESS']
+DEBUG:inotify.adapters:Events received in stream: ['IN_MODIFY']
+DEBUG:zoneminder-connector:received b'{"ET":"2026-01-14 15:58:47","ED":"Motion: Plafond","MN":"Monitor-1","EDP":"/var/cache/zoneminder/events/1/2026-01-14/473"}'
+INFO:zoneminder-connector:sending IDMEFv2 alert {'Version': '2.D.V04', 'ID': 'd8f489aa-d4aa-4fc3-84b9-530607a79d3b', 'CreateTime': '2026-01-14T15:58:47', 'Category': ['Intrusion.Burglary'], 'Priority': 'High', 'Description': 'Event Motion: Plafond on monitor Monitor-1', 'Analyzer': {'IP': '127.0.0.1', 'Name': 'zoneminder', 'Model': 'Zoneminder video surveillance system', 'Category': ['ODC'], 'Data': ['Images'], 'Method': ['Movement']}, 'Attachment': [{'Name': 'EventDirectoryPath', 'FileName': '/var/cache/zoneminder/events/1/2026-01-14/473'}, {'Name': 'EventSnapshotImage', 'ContentType': 'image/jpeg', 'ContentEncoding': 'base64', 'Content': '/9j/4AA... base64 content truncated ...rtANFrAlc//Z'}]}
 DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): testserver.idmefv2:9999
-DEBUG:urllib3.connectionpool:http://testserver.idmefv2:9999 "POST / HTTP/1.1" 200 None```
+DEBUG:urllib3.connectionpool:http://testserver.idmefv2:9999 "POST / HTTP/1.1" 200 None
+
+
+```
