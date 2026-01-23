@@ -1,0 +1,24 @@
+{
+    "Version": "2.D.V04",
+    "ID": "da3f49dc-888a-4d75-a080-5d0f75049333",
+    "CreateTime": "2001-12-31T23:59:59.52Z",
+    "Category": [
+        "Recon.Scanning"
+    ],
+    "Description": "suspicious network trafic detected - port scanning",
+    "Analyzer": {
+        "IP": "127.0.0.1",
+        "Name": "suricata",
+        "Model": "Suricata NIDS",
+        "Type": "Cyber",
+        "Category": [
+            "NIDS"
+        ],
+        "Data": [
+            "Network"
+        ],
+        "Method": [
+            "Signature"
+        ]
+    }
+}

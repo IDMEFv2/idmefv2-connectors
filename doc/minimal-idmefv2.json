@@ -1,0 +1,9 @@
+{
+  "Version" : "2.D.V05",
+  "ID" : "056666c6-9c04-43dd-b6bf-3d99fe490b08",
+  "CreateTime" : "1985-04-12T23:59:59.52Z",
+  "Analyzer" : {
+    "Name" : "foobar",
+    "IP" : "127.0.0.1"
+  }
+}
