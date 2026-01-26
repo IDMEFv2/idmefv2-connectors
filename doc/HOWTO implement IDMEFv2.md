@@ -29,7 +29,7 @@ Example: zoneminder
 
 ### Generating IDMEFv2 inside the tool
 
-This way of implementing IDMEFv2 is prefered if tool has an extension API that allows to add "plugins" or "extensions" that handle tool's alert.
+This way of implementing IDMEFv2 is prefered if tool has an extension API that allows to add "plugins" or "extensions" handling tool's alert.
 
 Being very tool specific, this topic is not further developed.
 
@@ -49,7 +49,6 @@ A HTTP client POSTing IDMEFv2 messages and logging response
 '''
 import requests
 
-# pylint: disable=too-few-public-methods
 class IDMEFv2Client2:
     '''
     Class storing client configuration and sending IDMEFv2 messages
@@ -111,7 +110,7 @@ Some IDMEFv2 fields, though not mandatory, are recommended in order to generate 
 - `"Analyzer.Category"`: an enum, describing the analyzer's category, such as `"AV"` for an AntiVirus or `"NIDS"` for a Network Intrusion Detection System
 - `"Analyzer.Data"`: an enum, describing the type of data used by the analyzer, such as `"File"` for an AntiVirus scanning a file or `"Datagram"` for a Network Intrusion Detection System analyzing network trafic
 
-An example of the Suricata NIDS can be:
+An example for the Suricata NIDS can be:
 ``` json
 {
     "Version": "2.D.V04",
@@ -140,6 +139,68 @@ An example of the Suricata NIDS can be:
 ```
 
 ### Using IDMEFv2 attachments
+
+IDMEFv2 attachments are useful to add to a IDMEFv2 meaningful data such as network packet dumps or intrusion images.
+
+Attachments are refered inside a IDMEFv2 message by name and can be refered from inside a `"Source"`, `"Target"` or `"Vector"` fields.
+
+An attachment must contain the following fields:
+
+- `"Name"`: unique identifier among attachments that can be used to reference this attachment from other classes using the `"Attachment"` attribute
+
+An attachment can contain the following fields:
+
+- `"ExternalURI"`: if the attachment's content is available and/or recognizable from an external resource, this is the URI (usually a URL) to that resource
+- `"FileName"`: this will usually be the original name of the captured file or the name of the file containing the captured content (e.g. a packet capture file)
+- `"ContentType"`: Internet Media Type of the attachment, using media types registered in IANA
+- `"ContentEncoding"`: content encoding, one of "json" or "base64" (used when the content contains binary data)
+- `"Content"`: the attachment's content, in case it is directly embedded inside the message
+
+An example of using an attachment with a `"ExternalURI"` (some fields are omitted):
+``` json
+{
+  "Attachment": [
+    {
+      "ExternalURI": "http://glpi/front/computer.form.php?id=2",
+      "Name": "GlpiComputerLink2"
+    },
+  ],
+  "Source": [
+    {
+      "Attachment": [
+        "GlpiComputerLink2"
+      ],
+    }
+  ]
+}
+```
+
+An example of using attachments with filename or embedded content (some fields are omitted):
+``` json
+{
+    "Target": [
+        {
+            "Attachment": [
+                "EventDirectoryPath",
+                "EventSnapshotImage"
+            ],
+            "GeoLocation": "43.967214059230514,5.576376914978028"
+        }
+    ],
+    "Attachment": [
+        {
+            "Name": "EventDirectoryPath",
+            "FileName": "/var/cache/zoneminder/events/1/2026-01-14/473"
+        },
+        {
+            "Name": "EventSnapshotImage",
+            "ContentType": "image/jpeg",
+            "ContentEncoding": "base64",
+            "Content": "/9j/4AA... base64 content truncated ...rtANFrAlc//Z"
+        }
+    ]
+}
+```
 
 ## Implementation helpers
 

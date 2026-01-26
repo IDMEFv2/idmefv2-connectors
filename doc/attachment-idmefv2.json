@@ -1,0 +1,45 @@
+{
+    "Version": "2.D.V04",
+    "ID": "d8f489aa-d4aa-4fc3-84b9-530607a79d3b",
+    "CreateTime": "2026-01-14T15:58:47",
+    "Category": [
+        "Intrusion.Burglary"
+    ],
+    "Priority": "High",
+    "Description": "Event Motion: Plafond on monitor Monitor-1",
+    "Analyzer": {
+        "IP": "127.0.0.1",
+        "Name": "zoneminder",
+        "Model": "Zoneminder video surveillance system",
+        "Category": [
+            "ODC"
+        ],
+        "Data": [
+            "Images"
+        ],
+        "Method": [
+            "Movement"
+        ]
+    },
+    "Target": [
+        {
+            "Attachment": [
+                "EventDirectoryPath",
+                "EventSnapshotImage"
+            ],
+            "GeoLocation": "43.967214059230514,5.576376914978028"
+        }
+    ],
+    "Attachment": [
+        {
+            "Name": "EventDirectoryPath",
+            "FileName": "/var/cache/zoneminder/events/1/2026-01-14/473"
+        },
+        {
+            "Name": "EventSnapshotImage",
+            "ContentType": "image/jpeg",
+            "ContentEncoding": "base64",
+            "Content": "/9j/4AA... base64 content truncated ...rtANFrAlc//Z"
+        }
+    ]
+}
