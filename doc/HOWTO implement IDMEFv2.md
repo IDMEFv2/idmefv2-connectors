@@ -204,9 +204,22 @@ An example of using attachments with filename or embedded content (some fields a
 
 ## Implementation helpers
 
+Implementing IDMEFv2 can take advantage of libraries and classes:
+- IDMEFv2 libraries, handling message creation, validation and serialization
+- connector classes, including JSON tree transformation
+
 ### IDMEFv2 libraries
 
-### Converter classes
+IDMEFv2 libraries currently exist in 2 flavours:
+
+- https://github.com/IDMEFv2/python-idmefv2: a Python library for parsing, handling, and generating JSON IDMEFv2 messages
+- https://github.com/IDMEFv2/java-idmefv2: a Java library for parsing, handling, and generating JSON IDMEFv2 messages
+
+Refer to the corresponding gitub repositories for further documentation on how to use these libraries.
+
+Note that for the Python language, a IDMEFv2 message is merely represented by a `dict`. Using the IDMEFv2 Python library is useful only if message must be validated against the IDMEFv2 JSON schema, which is an optional step.
+
+### Connector classes
 
 ## Validating and testing
 
