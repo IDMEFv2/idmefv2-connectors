@@ -74,8 +74,11 @@ class IDMEFv2Client2:
 
 ## Generating IDMEFv2 messages
 
+The IDMEFv2 format being a bit complex, this section gives some hints on where to start when implementing IDMEFv2 into a tool.
 
-### IDMEFv2 mandatory fields
+### IDMEFv2 mandatory fields
+
+First step is obviously to generate IDMEFv2 messages that contain format's mandatory fields or else the generated message will not validate against the schema.
 
 The following fields are mandatory in a IDMEFv2 message:
 
@@ -86,7 +89,7 @@ The following fields are mandatory in a IDMEFv2 message:
 
 The following fields are mandatory in an `Analyzer` object:
 - `"Name"`: the name of the analyzer, a string; example is `"foobar"`
-- `"IP"`: an IP address, either V4 or V6; example is `"127.0.0.1"`
+- `"IP"`: an IP address, either V4 or V6; example is `"127.0.0.1"` (note that this has changed in version `06` of the schema and this field is no longer mandatory)
 
 A minimal valid IDMEFv2 alert would therefore be, for version `"2.D.V05"` of the schema:
 ``` json
@@ -122,8 +125,8 @@ An example for the Suricata NIDS can be:
     "Description": "suspicious network trafic detected - port scanning",
     "Analyzer": {
         "IP": "127.0.0.1",
-        "Name": "suricata",
-        "Model": "Suricata NIDS",
+        "Name": "Suricata NIDS",
+        "Model": "SSuricata (Stable) version 8.0.3",
         "Type": "Cyber",
         "Category": [
             "NIDS"
@@ -142,7 +145,7 @@ An example for the Suricata NIDS can be:
 
 IDMEFv2 attachments are useful to add to a IDMEFv2 meaningful data such as network packet dumps or intrusion images.
 
-Attachments are refered inside a IDMEFv2 message by name and can be refered from inside a `"Source"`, `"Target"` or `"Vector"` fields.
+Attachments are defined inside a IDMEFv2 message by *name* and this name can be refered from inside a `"Source"`, `"Target"` or `"Vector"` fields.
 
 An attachment must contain the following fields:
 
