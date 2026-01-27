@@ -21,7 +21,44 @@ Once a IDMEFv2 message is generated, the message must be sent to a server using 
 
 ### Converting tool's JSON log output to IDMEFv2
 
-This way of generating IDMEFv2 messages applies obviously to a tool that already generates a JSON output, either writing it into a file, a network socket... This is the case for example for the Suricata NIDS (https://suricata.io/).
+This way of generating IDMEFv2 messages obviously applies to a tool that already generates a JSON output, either writing it into a file, a network socket... This is the case for example for the Suricata NIDS (https://suricata.io/) or the Wazuh SIEM (https://wazuh.com/).
+
+In this situation, the connector skeleton is partially generic, following this schema:
+
+```
+tool_alert = grab an alert as a JSON object in tool's JSON format
+idmefv2_alert = convert(tool_alert)
+post(idmefv2_alert)
+```
+
+Implementing this schema can rely on Python base classes, as explained in [Connector classes](#connector-classes).
+
+For example, the `main` for the Wazuh connector is presented below:
+``` python
+'''
+Main for Wazuh connector
+'''
+from .wazuhconverter import WazuhConverter
+from ..connector import ConnectorArgumentParser, Configuration, LogFileConnector
+
+if __name__ == '__main__':
+    opts = ConnectorArgumentParser('wazuh').parse_args()
+    cfg = Configuration(opts)
+    log_file_path = cfg.get('wazuh', 'logfile')
+    connector = LogFileConnector('wazuh', cfg, WazuhConverter(), log_file_path)
+    connector.run()
+```
+
+The only code that is tool specific is then the class that convert tool's JSON format to IDMEFv2. This class derives from `JSONConverter` base class in package `idmefv2.connectors`. This `JSONConverter` class implements a generic JSON to JSON converter, using a *pre-defined template* that is merely a Python `dict` containing following possible fields:
+- a JSON Path (see https://pypi.org/project/jsonpath-ng/ and
+https://goessner.net/articles/JsonPath/), i.e. a string starting by '$'
+- a plain string (not a JSON Path)
+- a dict
+- a list
+- a tuple
+- any other Python type
+
+ For further documentation on this class, refer to its Python documentation or to its source code [../idmefv2/connectors/jsonconverter.py](../idmefv2/connectors/jsonconverter.py)
 
 ### Converting tool's specific log format to IDMEFv2
 
