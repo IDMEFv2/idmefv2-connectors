@@ -3,7 +3,7 @@ The clamav to IDMEFv2 convertor.
 '''
 from datetime import datetime
 from ..jsonconverter import JSONConverter
-from ..idmefv2funs import idmefv2_uuid
+from ..idmefv2funs import idmefv2_uuid, idmefv2_my_local_ip
 
 def _create_time():
     return datetime.now().astimezone().isoformat()
@@ -42,7 +42,7 @@ class ClamavConverter(JSONConverter):
         'Priority': 'High',
         'Description' : 'Virus found',
         "Analyzer": {
-            "IP": "127.0.0.1",
+            "IP": idmefv2_my_local_ip,
             "Name": "clamav",
             "Model": "Clamav Antivirus",
             "Type": "Cyber",

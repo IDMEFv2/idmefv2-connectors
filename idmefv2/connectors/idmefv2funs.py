@@ -1,8 +1,9 @@
 '''
-UUID generation for IDMEFv2
+Useful helper functions for IDMEFv2
 '''
 import datetime
 import uuid
+import socket
 
 def idmefv2_uuid() -> str:
     '''
@@ -25,3 +26,13 @@ def idmefv2_convert_timestamp(ts: str) -> str:
     '''
     i = datetime.datetime.fromisoformat(ts)
     return i.isoformat()
+
+def idmefv2_my_local_ip() -> str:
+    '''
+    Returns local IP
+
+    Returns:
+        str: the local IP
+    '''
+    hostname = socket.gethostname()
+    return socket.gethostbyname(hostname)

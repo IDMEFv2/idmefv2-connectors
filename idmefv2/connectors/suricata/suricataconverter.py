@@ -2,7 +2,7 @@
 The Suricata to IDMEFv2 convertor.
 '''
 from ..jsonconverter import JSONConverter
-from ..idmefv2funs import idmefv2_uuid, idmefv2_convert_timestamp
+from ..idmefv2funs import idmefv2_uuid, idmefv2_convert_timestamp, idmefv2_my_local_ip
 
 def convert_severity(severity: int) -> str:
     '''
@@ -63,7 +63,7 @@ class SuricataConverter(JSONConverter):
         'Priority': (convert_severity, '$.alert.severity'),
         'Description' : '$.alert.category',
         "Analyzer": {
-            "IP": "127.0.0.1",
+            "IP": idmefv2_my_local_ip,
             "Name": "suricata",
             "Model": "Suricata NIDS",
             "Type": "Cyber",
