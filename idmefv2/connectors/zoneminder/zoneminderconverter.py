@@ -4,7 +4,7 @@ The zoneminder to IDMEFv2 convertor.
 import re
 import base64
 from ..jsonconverter import JSONConverter
-from ..idmefv2funs import idmefv2_uuid
+from ..idmefv2funs import idmefv2_uuid, idmefv2_my_local_ip
 
 #
 # The zoneminder converter takes as input a "flat" dictionary having
@@ -46,7 +46,7 @@ class ZoneminderConverter(JSONConverter):
         'Priority': 'High',
         'Description' : (_make_description, '$.ED', "$.MN"),
         "Analyzer": {
-            "IP": "127.0.0.1",
+            "IP": idmefv2_my_local_ip,
             "Name": "zoneminder",
             "Model": "Zoneminder video surveillance system",
             "Category": [
