@@ -58,7 +58,7 @@ https://goessner.net/articles/JsonPath/), i.e. a string starting by '$'
 - a tuple
 - any other Python type
 
- For further documentation on this class, refer to its Python documentation or to its source code [../idmefv2/connectors/jsonconverter.py](../idmefv2/connectors/jsonconverter.py)
+ For further documentation on this class, refer to its Python documentation or to its source code [../idmefv2/connectors/jsonconverter.py](../idmefv2/connectors/jsonconverter.py) and to the source code of the classes derived from `JSONConverter`.
 
 ### Converting tool's specific log format to IDMEFv2
 
@@ -241,6 +241,10 @@ An example of using attachments with filename or embedded content (some fields a
     ]
 }
 ```
+
+### Extending IDMEFv2
+
+TO BE DOCUMENTED
 
 ## Implementation helpers
 
