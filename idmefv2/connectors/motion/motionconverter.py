@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 '''
 The motion to IDMEFv2 convertor.
 '''
