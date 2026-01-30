@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 '''
 The zoneminder to IDMEFv2 convertor.
 '''
