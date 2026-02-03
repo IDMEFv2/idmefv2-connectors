@@ -10,6 +10,7 @@ import uuid as _uuid
 from typing import Any, Mapping, Sequence
 
 from ..jsonconverter import JSONConverter
+from ..idmefv2funs import idmefv2_uuid, idmefv2_my_local_ip
 
 
 def _idmef_uuid() -> str:
@@ -56,8 +57,18 @@ class ZabbixConverter(JSONConverter):
     """Convert a Zabbix problem dict into an IDMEFv2 message with dynamic "Analyzer.Method"."""
 
     def __init__(self, analyzer_methods: Sequence[str] | None = None) -> None:
-        # Default to ['Polling'] if not provided
-        methods = list(analyzer_methods) if analyzer_methods else ['Polling']
+        # Default to ['Monitor', 'Threshold'] if not provided
+        if analyzer_methods:
+            methods = []
+            for m in analyzer_methods:
+                if m.lower() in ('polling', 'push'):
+                    # Map internal modes to valid IDMEFv2 Analyzer.Method enum
+                    if 'Monitor' not in methods:
+                        methods.append('Monitor')
+                else:
+                    methods.append(m)
+        else:
+            methods = ['Monitor', 'Threshold']
 
         template: Mapping[str, Any] = {
             'Version': '2.D.V04',
@@ -67,11 +78,12 @@ class ZabbixConverter(JSONConverter):
             'Priority': (_severity, '$.severity'),
             'Description': '$.name',
             'Analyzer': {
+                'IP': idmefv2_my_local_ip,
                 'Name': 'zabbix',
                 'Model': 'Zabbix Monitoring',
-                'Type': 'Monitor',
+                'Type': ['Availability'],
                 'Category': ['NMS'],
-                'Data': ['System'],
+                'Data': ['Data'],
                 'Method': methods,
             },
             'Source': [
