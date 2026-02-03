@@ -143,10 +143,10 @@ class PrometheusConverter(JSONConverter):
                 'IP': idmefv2_my_local_ip,
                 'Name': 'prometheus',
                 'Model': 'Prometheus Monitoring',
-                'Type': 'Monitor',
+                'Type': ['Availability'],
                 'Category': ['NMS'],
-                'Data': ['System'],
-                'Method': ['Polling'],
+                'Data': ['Data'],
+                'Method': ['Monitor', 'Threshold'],
             },
             'Source': [
                 {
