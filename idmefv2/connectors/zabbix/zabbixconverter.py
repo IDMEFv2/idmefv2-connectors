@@ -10,7 +10,7 @@ import uuid as _uuid
 from typing import Any, Mapping, Sequence
 
 from ..jsonconverter import JSONConverter
-from ..idmefv2funs import idmefv2_my_local_ip
+from ..idmefv2funs import idmefv2_uuid, idmefv2_my_local_ip
 
 
 def _idmef_uuid() -> str:
