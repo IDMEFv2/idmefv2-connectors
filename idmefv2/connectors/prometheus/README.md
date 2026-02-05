@@ -2,6 +2,11 @@
 
 This connector polls the Prometheus API for active alerts and converts them to IDMEFv2 format.
 
+## Overview
+
+The prometheus connector generates a IDMEFv2 message when a alerts is detected by Prometheus.
+
+
 ## Features
 
 - Polls Prometheus `/api/v1/alerts` endpoint at configurable intervals (in config file)

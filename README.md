@@ -2,6 +2,8 @@
 
 This repository contains Python implementations of IDMEFv2 connectors for various probes and managers:
 - Clamav antivirus (https://www.clamav.net/): see [./idmefv2/connectors/clamav](./idmefv2/connectors/clamav/#overview)
+- Modsecurity (https://modsecurity.org/): see [./idmefv2/connectors/modsecurity](./idmefv2/connectors/modsecurity/#overview)
+- Prometheus (https://prometheus.io/): see [./idmefv2/connectors/prometheus](./idmefv2/connectors/prometheus/#overview)
 - Suricata NIDS (https://suricata.io/): see [./idmefv2/connectors/suricata](./idmefv2/connectors/suricata/#overview)
 - Wazuh (https://wazuh.com/): see [./idmefv2/connectors/wazuh](./idmefv2/connectors/wazuh/#overview)
 - Zabbix (https://www.zabbix.com): see [./idmefv2/connectors/zabbix](./idmefv2/connectors/zabbix/#overview)
