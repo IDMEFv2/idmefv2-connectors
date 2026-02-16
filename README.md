@@ -2,6 +2,7 @@
 
 This repository contains Python implementations of IDMEFv2 connectors for various probes and managers:
 - Clamav antivirus (https://www.clamav.net/): see [./idmefv2/connectors/clamav](./idmefv2/connectors/clamav/#overview)
+- Kismet (https://www.kismetwireless.net/): see [./idmefv2/connectors/kismet](./idmefv2/connectors/kismet/#overview)
 - Modsecurity (https://modsecurity.org/): see [./idmefv2/connectors/modsecurity](./idmefv2/connectors/modsecurity/#overview)
 - Prometheus (https://prometheus.io/): see [./idmefv2/connectors/prometheus](./idmefv2/connectors/prometheus/#overview)
 - Suricata NIDS (https://suricata.io/): see [./idmefv2/connectors/suricata](./idmefv2/connectors/suricata/#overview)
@@ -147,6 +148,9 @@ password = password
 ### Specific configuration
 
 * Clamav connector: see [./idmefv2/connectors/clamav](./idmefv2/connectors/clamav/#configuration)
+* Kismet connector: see [./idmefv2/connectors/kismet](./idmefv2/connectors/kismet/#configuration)
+* Modsecurity connector: see [./idmefv2/connectors/modsecurity](./idmefv2/connectors/modsecurity/#configuration)
+* Prometheus connector: see [./idmefv2/connectors/prometheus](./idmefv2/connectors/prometheus/#configuration)
 * Suricata connector: see [./idmefv2/connectors/suricata](./idmefv2/connectors/suricata/#configuration)
 * Wazuh connector: see [./idmefv2/connectors/wazuh](./idmefv2/connectors/wazuh/#configuration)
 * Zabbix connector: see [./idmefv2/connectors/zabbix](./idmefv2/connectors/zabbix/#configuration)
@@ -157,6 +161,9 @@ password = password
 ### Running connectors
 
 * Clamav connector: see [./idmefv2/connectors/clamav](./idmefv2/connectors/clamav/#running)
+* Kismet connector: see [./idmefv2/connectors/kismet](./idmefv2/connectors/kismet/#running)
+* Modsecurity connector: see [./idmefv2/connectors/modsecurity](./idmefv2/connectors/modsecurity/#running)
+* Prometheus connector: see [./idmefv2/connectors/prometheus](./idmefv2/connectors/prometheus/#running)
 * Suricata connector: see [./idmefv2/connectors/suricata](./idmefv2/connectors/suricata/#running)
 * Wazuh connector: see [./idmefv2/connectors/wazuh](./idmefv2/connectors/wazuh/#running)
 * Zabbix connector: see [./idmefv2/connectors/zabbix](./idmefv2/connectors/zabbix/#running)
