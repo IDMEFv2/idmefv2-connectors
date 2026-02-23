@@ -166,7 +166,7 @@ password = password
 * Kismet connector: see [./idmefv2/connectors/kismet](./idmefv2/connectors/kismet/#running)
 * Modsecurity connector: see [./idmefv2/connectors/modsecurity](./idmefv2/connectors/modsecurity/#running)
 * Prometheus connector: see [./idmefv2/connectors/prometheus](./idmefv2/connectors/prometheus/#running)
-* Suricata connector: see [./idmefv2/connectors/suricata](./idmefv2/connectors/suricata/#running)
+* Samhain connector: see [./idmefv2/connectors/samhain](./idmefv2/connectors/samhain/#running)
 * Suricata connector: see [./idmefv2/connectors/suricata](./idmefv2/connectors/suricata/#running)
 * Wazuh connector: see [./idmefv2/connectors/wazuh](./idmefv2/connectors/wazuh/#running)
 * Zabbix connector: see [./idmefv2/connectors/zabbix](./idmefv2/connectors/zabbix/#running)
