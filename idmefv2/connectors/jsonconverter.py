@@ -127,3 +127,24 @@ class JSONConverter:
         if self.filter(src):
             return (True, JSONConverter.__convert(self._compiled_template, src))
         return (False, src)
+
+# pylint: disable=super-init-not-called
+class ChainJSONConverter(JSONConverter):
+    '''
+    Class calling a chain of converters in turn
+    '''
+    def __init__(self, *converters):
+        for c in converters:
+            if not isinstance(c, JSONConverter):
+                raise TypeError()
+        self._converters = converters
+
+    def filter(self, src: dict) -> bool:
+        return any(map(lambda c: c.filter(src), self._converters))
+
+    def convert(self, src: dict) -> tuple[bool, dict]:
+        for converter in self._converters:
+            (c, r) = converter.convert(src)
+            if c:
+                return (c, r)
+        return (False, src)
