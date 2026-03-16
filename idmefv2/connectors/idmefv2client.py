@@ -2,21 +2,18 @@
 A HTTP client POSTing IDMEFv2 messages and logging response
 '''
 import requests
-from .configuration import Configuration
 
 # pylint: disable=too-few-public-methods
 class IDMEFv2Client:
     '''
     Class storing client configuration and sending IDMEFv2 messages
     '''
-    def __init__(self, cfg: Configuration):
-        self._url = cfg.get('idmefv2', 'url')
+    def __init__(self, url: str, login : str = None, password : str = None, verify : bool = True):
+        self._url = url
         self._session = requests.Session()
-        login = cfg.get('idmefv2', 'login', fallback=None)
-        password = cfg.get('idmefv2', 'password', fallback=None)
         if login is not None and password is not None:
             self._session.auth = (login, password)
-        self._session.verify = cfg.getboolean('idmefv2', 'verify', fallback=True)
+        self._session.verify = verify
 
     def post(self, idmefv2: dict):
         '''
