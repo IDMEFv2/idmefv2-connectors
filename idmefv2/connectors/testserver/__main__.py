@@ -38,7 +38,7 @@ class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
         '''
         self._response(501)
 
-    # pylint: disable=invalid-name
+    # pylint: disable=invalid-name, broad-exception-caught
     def do_POST(self):
         '''
         Handles a HTTP POST:
@@ -60,6 +60,9 @@ class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
             logging.error(e.message)
             status = 500
             response_data = e.message + '\n'
+        except Exception as e:
+            logging.error(str(e))
+            status = 500
         self._response(status, response_data)
 
 def parse_options():
