@@ -5,7 +5,7 @@ The motion to IDMEFv2 convertor.
 import re
 import base64
 from ..jsonconverter import JSONConverter
-from ..idmefv2funs import idmefv2_uuid
+from ..idmefv2funs import idmefv2_uuid, idmefv2_my_local_ip
 
 #
 # The motion converter takes as input a "flat" dictionary having
@@ -47,7 +47,7 @@ class MotionConverter(JSONConverter):
         'Priority': 'High',
         'Description' : (_make_description, '$.event_name', "$.camera_id"),
         "Analyzer": {
-            "IP": "127.0.0.1",
+            "IP": idmefv2_my_local_ip,
             "Name": "motion",
             "Model": "Motion video surveillance system",
             "Category": [
