@@ -1,0 +1,33 @@
+name: "name of the rule"
+
+index: theindex-*
+
+type: any
+
+alert: "idmefv2.connectors.elastalert2.IDMEFv2Alerter"
+
+# URL of the IDMEFv2 server
+idmefv2_url: http://1.2.3.4:9999
+
+# Jinja2 template for IDMEFv2 message generation
+idmefv2_template:  |-
+  {
+    "Version": "2.D.V04",
+    "ID": "{{ match.agent.id }}",
+    "CreateTime": "{{ match['@timestamp'] }}",
+    "Category": ["Malicious.System"],
+    "Description": "{{ rule.name }}",
+    "Analyzer": {
+      "Name": "{{ match.agent.type }}",
+      "IP": "{{ match.source.ip }}"
+    }
+  }
+
+# login for HTTP base authentication
+# idmefv2_login: foo
+
+# password for HTTP base authentication
+# idmefv2_password: bar
+
+# HTTPS certificate validation
+# idmefv2_verify: False
