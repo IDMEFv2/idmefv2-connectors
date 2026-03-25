@@ -2,6 +2,7 @@
 
 This repository contains Python implementations of IDMEFv2 connectors for various probes and managers:
 - Clamav antivirus (https://www.clamav.net/): see [./idmefv2/connectors/clamav](./idmefv2/connectors/clamav/#overview)
+- elastalert2 (https://github.com/jertel/elastalert2): see [./idmefv2/connectors/elastalert2](./idmefv2/connectors/elastalert2/#overview)
 - Kismet (https://www.kismetwireless.net/): see [./idmefv2/connectors/kismet](./idmefv2/connectors/kismet/#overview)
 - Modsecurity (https://modsecurity.org/): see [./idmefv2/connectors/modsecurity](./idmefv2/connectors/modsecurity/#overview)
 - Prometheus (https://prometheus.io/): see [./idmefv2/connectors/prometheus](./idmefv2/connectors/prometheus/#overview)
