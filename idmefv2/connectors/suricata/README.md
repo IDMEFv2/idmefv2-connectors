@@ -50,3 +50,51 @@ curl http://testmynids.org/uid/index.html
 ```
 
 This will trigger a Suricata alert which in turn will be converted to IDMEFv2 and forwarded either to the test server or to another server receiving IDMEFv2 alerts.
+
+### Category Mapping
+
+The connector attempts to categorize alerts based on the classification of the event:
+
+- Not Suspicious Traffic → Other.Uncategorised
+- Traffic → Other.Uncategorised
+- Potentially Bad Traffic, → Other.Undetermined
+- Attempted Information Leak → Information.DataLeak
+- limited,Information Leak → Information.DataLeak
+- largescale,Large Scale Information Leak → Information.DataLeak
+- Attempted Denial of Service → Attempt.Exploit
+- Denial of Service → Availability.DoS
+- Attempted User Privilege Gain → Attempt.Exploit
+- Unsuccessful User Privilege Gain → Attempt.Exploit
+- Successful User Privilege Gain → Intrusion.UserCompromise
+- Attempted Administrator Privilege Gain → Attempt.Exploit
+- Successful Administrator Privilege Gain → Intrusion.AdminCompromise
+- Decode of an RPC Query → Other.Uncategorised
+- Executable code was detected → Attempt.Exploit
+- A suspicious string was detected →
+- A suspicious filename was detected →
+- An attempted login using a suspicious username was detected → Attempt.Login
+- A system call was detected → Malicious.System
+- A TCP connection was detected →
+- A Network Trojan was detected, → Malicious.Distribution
+- A client was using an unusual port → Recon.Scanning
+- Detection of a Network Scan → Recon.Scanning
+- Detection of a Denial of Service Attack → Availability.DoS
+- Detection of a non-standard protocol or event → Other.Undetermined
+- Generic Protocol Command Decode → Other.Uncategorised
+- access to a potentially vulnerable web application →
+- Web Application Attack → Intrusion.AppCompromise
+- Misc activity → Other.Uncategorised
+- Misc Attack → Attempt.Exploit
+- Generic ICMP event →
+- Inappropriate Content was Detected → Abusive.Illicit
+- Potential Corporate Privacy Violation → Information.UnauthorizedAccess
+- Attempt to login by a default username and password → Attempt.Login
+- Targeted Malicious Activity was Detected → Malicious.System
+- Exploit Kit Activity Detected → Malicious.Distribution
+- Device Retrieving External IP Address Detected → Recon.Scanning
+- Domain Observed Used for C2 Detected →
+- Possibly Unwanted Program Detected → Malicious.Configuration
+- Successful Credential Theft Detected → Fraud.UnauthorizedUsage
+- Possible Social Engineering Attempted → Recon.SocialEngineering
+- Crypto Currency Mining Activity Detected → Fraud.UnauthorizedUsage
+- Malware Command and Control Activity Detected → Malicious.Botnet
