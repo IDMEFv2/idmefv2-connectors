@@ -5,8 +5,8 @@ import argparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import logging
-from idmefv2.exceptions import SerializationError
 import jsonschema
+from idmefv2.exceptions import SerializationError
 from idmefv2.message import Message, SerializedMessage
 
 

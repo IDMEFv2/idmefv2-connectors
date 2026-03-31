@@ -37,6 +37,10 @@ def _make_snapshot_base64(path: str) -> str:
         return base64_output
 
 def get_stream_uri(camera_id: str, stream_port: int) -> str:
+    '''
+    Get the stream URI for a given camera ID and stream port.
+    The stream URI is in the format http://<ip>:<stream_port>/camera/<camera_id>
+    '''
     ip = idmefv2_my_local_ip()
     return f"http://{ip}:{stream_port}/camera/{camera_id}"
 
@@ -183,7 +187,6 @@ class MotionEventStartConverter(JSONConverter):
     def __init__(self, stream_port: int):
         self._stream_port = stream_port
         template = MotionEventStartConverter.IDMEFV2_TEMPLATE
-        # template.get('Attachment')[0]['ExternalURI'].update((get_stream_uri, "$.camera_id", stream_port))
         template['Attachment'][0]['ExternalURI'] = [(get_stream_uri, "$.camera_id", stream_port)]
         super().__init__(template)
 

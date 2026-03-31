@@ -3,7 +3,8 @@ Main for motion connector
 """
 
 from .motionconverter import MotionConverter, MotionPictureSaveConverter, MotionEventStartConverter
-from .motionconverter import MotionCameraLostConverter, MotionEventEndConverter, MotionMovieEndConverter
+from .motionconverter import MotionCameraLostConverter, MotionEventEndConverter
+from .motionconverter import MotionMovieEndConverter
 from ..configuration import Configuration
 from ..connector import ConnectorArgumentParser, LogFileConnector
 
