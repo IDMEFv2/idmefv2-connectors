@@ -3,7 +3,9 @@ A HTTP server for testing
 '''
 import argparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import json
 import logging
+from idmefv2.exceptions import SerializationError
 import jsonschema
 from idmefv2.message import Message, SerializedMessage
 
@@ -60,6 +62,31 @@ class IDMEFv2RequestHandler(BaseHTTPRequestHandler):
             logging.error(e.message)
             status = 500
             response_data = e.message + '\n'
+        except SerializationError as e:
+            e = e.__cause__
+            if isinstance(e, json.JSONDecodeError):
+                context = 16
+                status = 500
+                response_data = f"Invalid JSON: {e.msg}\n"
+                # Extract the line containing the error
+                line = e.doc.split('\n')[e.lineno - 1]
+                # Show the problematic character with context
+                start = max(0, e.colno - 1 - context)
+                end = min(len(line), e.colno - 1 + context)
+                context_str = line[start:end]
+                position_description = f"Line {e.lineno}: "
+                pointer = '^' + ' ' * (e.colno - 1 - start)
+                pointer = f"{' ' * (len(position_description) + e.colno - 1)}" + pointer
+                response_data += f"Line {e.lineno}: {context_str}\n"
+                response_data += f"{pointer}\n"
+                logging.error(response_data)
+            else:
+                logging.error(str(e))
+                status = 500
+        except ModuleNotFoundError as e:
+            logging.error(str(e))
+            response_data = f"Module not found: {e.name}\n"
+            status = 500
         except Exception as e:
             logging.error(str(e))
             status = 500
