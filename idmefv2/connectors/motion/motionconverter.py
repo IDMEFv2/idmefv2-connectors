@@ -93,7 +93,9 @@ class MotionPictureSaveConverter(JSONConverter):
     }
 
     def __init__(self):
-        super().__init__(MotionPictureSaveConverter.IDMEFV2_TEMPLATE)
+        template = MotionPictureSaveConverter.IDMEFV2_TEMPLATE
+        template['ID'] = (self._idmefv2_uuid, '$.event_id')
+        super().__init__(template)
 
     def filter(self, src: dict) -> bool:
         return src.get('event_name') == "picture_save"
@@ -140,7 +142,9 @@ class MotionCameraLostConverter(JSONConverter):
     }
 
     def __init__(self):
-        super().__init__(MotionEventStartConverter.IDMEFV2_TEMPLATE)
+        template = self.IDMEFV2_TEMPLATE
+        template['ID'] = (self._idmefv2_uuid, '$.event_id')
+        super().__init__(template)
 
     def filter(self, src: dict) -> bool:
         return src.get('event_name') == "camera_lost"
@@ -186,7 +190,8 @@ class MotionEventStartConverter(JSONConverter):
 
     def __init__(self, stream_port: int):
         self._stream_port = stream_port
-        template = MotionEventStartConverter.IDMEFV2_TEMPLATE
+        template = self.IDMEFV2_TEMPLATE
+        template['ID'] = (self._idmefv2_uuid, '$.event_id')
         template['Attachment'][0]['ExternalURI'] = [(get_stream_uri, "$.camera_id", stream_port)]
         super().__init__(template)
 
@@ -228,7 +233,9 @@ class MotionEventEndConverter(JSONConverter):
     }
 
     def __init__(self):
-        super().__init__(MotionEventStartConverter.IDMEFV2_TEMPLATE)
+        template = self.IDMEFV2_TEMPLATE
+        template['ID'] = (self._idemfv2_uuid_terminate, '$.event_id')
+        super().__init__(template)
 
     def filter(self, src: dict) -> bool:
         return src.get('event_name') == "event_end"
@@ -273,7 +280,9 @@ class MotionMovieEndConverter(JSONConverter):
     }
 
     def __init__(self):
-        super().__init__(MotionEventStartConverter.IDMEFV2_TEMPLATE)
+        template = self.IDMEFV2_TEMPLATE
+        template['ID'] = (self._idmefv2_uuid, '$.event_id')
+        super().__init__(template)
 
     def filter(self, src: dict) -> bool:
         return src.get('event_name') == "movie_end"
