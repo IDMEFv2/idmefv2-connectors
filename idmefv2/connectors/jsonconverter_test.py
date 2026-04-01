@@ -2,7 +2,8 @@
 '''
 Tests for the JSON converter
 '''
-from .jsonconverter import JSONConverter
+import pytest
+from .jsonconverter import JSONConverter, ChainJSONConverter
 
 def foobar():
     return 'FOOBAR'
@@ -58,3 +59,28 @@ def test_function_2():
     _, o = converter.convert(i)
     assert isinstance(o, dict)
     assert o['foo'] == 'AAA_FOO'
+
+def test_chain_converter_1():
+    with pytest.raises(TypeError):
+        _ = ChainJSONConverter(1, 2)
+
+class _ConverterA(JSONConverter):
+    def __init__(self):
+        super().__init__({'foo': '$.a'})
+
+    def filter(self, src):
+        return 'a' in src
+
+class _ConverterB(JSONConverter):
+    def __init__(self):
+        super().__init__({'bar': '$.b'})
+
+    def filter(self, src):
+        return 'b' in src
+
+def test_chain_converter_2():
+    c = ChainJSONConverter(_ConverterA(), _ConverterB())
+    _, o = c.convert({'a': 1})
+    assert o == {'foo': 1}
+    _, o = c.convert({'b': 2})
+    assert o == {'bar': 2}

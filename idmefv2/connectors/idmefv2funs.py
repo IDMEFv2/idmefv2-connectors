@@ -36,3 +36,12 @@ def idmefv2_my_local_ip() -> str:
     '''
     hostname = socket.gethostname()
     return socket.gethostbyname(hostname)
+
+def idmefv2_my_host_name() -> str:
+    '''
+    Returns local hostname
+
+    Returns:
+        str: the local hostname
+    '''
+    return socket.gethostname()

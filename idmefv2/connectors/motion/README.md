@@ -69,3 +69,11 @@ DEBUG:urllib3.connectionpool:Resetting dropped connection: testserver.idmefv2
 
 
 ```
+
+### Category Mapping
+
+The connector attempts to categorize alerts based on the nature of the event:
+
+- Motion detection → `Intrusion.Burglary`
+- End of motion detection → `Intrusion.Burglary`
+- Loss of camera signal → `Availability.Failure`
