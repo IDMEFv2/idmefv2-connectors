@@ -2,6 +2,7 @@
     Generic JSON to JSON converter
 '''
 import jsonpath_ng as jsonpath
+from .idmefv2funs import idmefv2_uuid
 
 class JSONConverter:
     '''
@@ -32,6 +33,40 @@ class JSONConverter:
 
     See jsonconverter_test.py for examples
     '''
+
+    '''
+    A dict mapping event IDs to IDMEFv2 message IDs, used to avoid generating multiple IDMEF messages identifier for the same event
+    (for alert lifecycle management)
+    '''
+    message_ids = {}
+
+    def _idmefv2_uuid(self, identifier: any) -> str:
+        '''
+        Get the IDMEFv2 message ID for a given event identifier, generating a new one if not already present
+
+        Returns:
+            str: a new UUID version 4
+        '''
+        if (identifier in JSONConverter.message_ids):
+            return JSONConverter.message_ids[identifier]
+        new_id = idmefv2_uuid()
+        JSONConverter.message_ids[identifier] = new_id
+        return new_id
+
+    def _idemfv2_uuid_terminate(self, identifier: any) -> str:
+        '''
+        Terminate the IDMEFv2 message ID for a given event identifier, i.e. remove it from the dict of message IDs
+
+        Args:
+            identifier (any): the event identifier
+        '''
+        if (identifier in JSONConverter.message_ids):
+            uuid = JSONConverter.message_ids[identifier]
+            del JSONConverter.message_ids[identifier]
+            return uuid
+        # if identifier is not in the dict, generate a new UUID and return it, should not happen in normal conditions
+        return idmefv2_uuid()
+
     @staticmethod
     def __compile_template(template: any):
         if isinstance(template, str) and template.startswith('$'):
