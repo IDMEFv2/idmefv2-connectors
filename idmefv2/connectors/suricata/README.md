@@ -55,46 +55,46 @@ This will trigger a Suricata alert which in turn will be converted to IDMEFv2 an
 
 The connector attempts to categorize alerts based on the classification of the event:
 
-- Not Suspicious Traffic → Other.Uncategorised
+- Not Suspicious Traffic → Access.Authorized
 - Traffic → Other.Uncategorised
-- Potentially Bad Traffic, → Other.Undetermined
-- Attempted Information Leak → Information.DataLeak
-- limited,Information Leak → Information.DataLeak
-- largescale,Large Scale Information Leak → Information.DataLeak
-- Attempted Denial of Service → Attempt.Exploit
+- Potentially Bad Traffic → Access.Unauthorized
+- Attempted Information Leak → Theft.Data
+- limited,Information Leak → Theft.Data
+- largescale,Large Scale Information Leak → Theft.Breaches
+- Attempted Denial of Service → Availability.DoS
 - Denial of Service → Availability.DoS
-- Attempted User Privilege Gain → Attempt.Exploit
-- Unsuccessful User Privilege Gain → Attempt.Exploit
-- Successful User Privilege Gain → Intrusion.UserCompromise
-- Attempted Administrator Privilege Gain → Attempt.Exploit
-- Successful Administrator Privilege Gain → Intrusion.AdminCompromise
+- Attempted User Privilege Gain → Access.Escalation
+- Unsuccessful User Privilege Gain → Access.Escalation
+- Successful User Privilege Gain → Access.Escalation
+- Attempted Administrator Privilege Gain → Access.Escalation
+- Successful Administrator Privilege Gain → Access.Escalation
 - Decode of an RPC Query → Other.Uncategorised
-- Executable code was detected → Attempt.Exploit
-- A suspicious string was detected →
-- A suspicious filename was detected →
-- An attempted login using a suspicious username was detected → Attempt.Login
-- A system call was detected → Malicious.System
-- A TCP connection was detected →
-- A Network Trojan was detected, → Malicious.Distribution
-- A client was using an unusual port → Recon.Scanning
-- Detection of a Network Scan → Recon.Scanning
+- Executable code was detected → Malware.Other
+- A suspicious string was detected → Other.Uncategorised
+- A suspicious filename was detected → Malware.Other
+- An attempted login using a suspicious username was detected → Access.Forced
+- A system call was detected → Other.Uncategorised
+- A TCP connection was detected → Access.Authorized
+- A Network Trojan was detected → Malware.Trojan
+- A client was using an unusual port → Recon.Netword
+- Detection of a Network Scan → Recon.Netword
 - Detection of a Denial of Service Attack → Availability.DoS
-- Detection of a non-standard protocol or event → Other.Undetermined
+- Detection of a non-standard protocol or event → Other.Uncategorised
 - Generic Protocol Command Decode → Other.Uncategorised
-- access to a potentially vulnerable web application →
-- Web Application Attack → Intrusion.AppCompromise
+- access to a potentially → Access.Unauthorized
+- Web Application Attack → Access.Compromise
 - Misc activity → Other.Uncategorised
-- Misc Attack → Attempt.Exploit
-- Generic ICMP event →
-- Inappropriate Content was Detected → Abusive.Illicit
-- Potential Corporate Privacy Violation → Information.UnauthorizedAccess
-- Attempt to login by a default username and password → Attempt.Login
-- Targeted Malicious Activity was Detected → Malicious.System
-- Exploit Kit Activity Detected → Malicious.Distribution
-- Device Retrieving External IP Address Detected → Recon.Scanning
-- Domain Observed Used for C2 Detected →
-- Possibly Unwanted Program Detected → Malicious.Configuration
-- Successful Credential Theft Detected → Fraud.UnauthorizedUsage
-- Possible Social Engineering Attempted → Recon.SocialEngineering
-- Crypto Currency Mining Activity Detected → Fraud.UnauthorizedUsage
-- Malware Command and Control Activity Detected → Malicious.Botnet
+- Misc Attack → Other.Uncategorised
+- Generic ICMP event → Other.Uncategorised
+- Inappropriate Content was Detected → Operational.Policy Violation
+- Potential Corporate Privacy Violation → Theft.PII
+- Attempt to login by a default username and password → Access.Forced
+- Targeted Malicious Activity was Detected → National.Cyber
+- Exploit Kit Activity Detected → Malware.Other
+- Device Retrieving External IP Address Detected → Recon.Netword
+- Domain Observed Used for C2 Detected → Access.Backdoor
+- Possibly Unwanted Program Detected → Malware.Adware
+- Successful Credential Theft Detected → Access.Compromise
+- Possible Social Engineering Attempted → SocialEng.Other
+- Crypto Currency Mining Activity Detected → Fraud.Usage
+- Malware Command and Control Activity Detected → Access.Backdoor
