@@ -263,6 +263,17 @@ Refer to the corresponding gitub repositories for further documentation on how t
 
 Note that for the Python language, a IDMEFv2 message is merely represented by a `dict`. Using the IDMEFv2 Python library is useful only if message must be validated against the IDMEFv2 JSON schema, which is an optional step.
 
+#### Java HelloWorld Example
+
+A complete Java example demonstrating IDMEFv2 message generation and HTTP sending is available in [./code/java/HelloWorld](./code/java/HelloWorld/). This example shows:
+
+- How to build IDMEFv2 messages using the Java library
+- How to send messages via HTTP POST to a server
+- How to handle message validation
+- Complete Maven project setup with dependencies
+
+The example generates a "Hello world" IDMEFv2 message and sends it to a configurable HTTP(S) endpoint. See the [README.md](./code/java/HelloWorld/README.md) in that directory for detailed usage instructions.
+
 ### Connector classes
 
 The Python `idmefv2.connectors` provide base classes that can be useful when implementing IDMEFv2 messages generation in Python. These classes are:
