@@ -1,8 +1,7 @@
 """HTTP client for sending IDMEFv2 messages."""
 
-import requests
 from typing import Optional
-
+import requests
 
 class IDMEFv2Client:
     """Client for sending IDMEFv2 messages to a remote server via HTTP/HTTPS.
@@ -51,11 +50,11 @@ class IDMEFv2Client:
             if response.status_code in (200, 201, 202):
                 print(f"✓ IDMEFv2 message sent successfully to {self.server_url}")
                 return True
-            else:
-                print(f"✗ Server returned status code: {response.status_code}")
-                if response.text:
-                    print(f"Response: {response.text}")
-                return False
+
+            print(f"✗ Server returned status code: {response.status_code}")
+            if response.text:
+                print(f"Response: {response.text}")
+            return False
 
         except requests.RequestException as e:
             print(f"✗ HTTP request failed: {e}")

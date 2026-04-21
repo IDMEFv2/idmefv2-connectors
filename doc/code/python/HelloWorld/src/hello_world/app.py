@@ -1,6 +1,7 @@
 """IDMEFv2 Hello World Application main entry point."""
 
 import sys
+import traceback
 from typing import List
 
 from .client import IDMEFv2Client
@@ -73,9 +74,8 @@ class App:
                 print("═══════════════════════════════════════════════════════════════")
                 sys.exit(1)
 
-        except Exception as e:
+        except Exception as e: # pylint: disable=broad-except
             print(f"✗ Error: {e}", file=sys.stderr)
-            import traceback
             traceback.print_exc()
             sys.exit(1)
 

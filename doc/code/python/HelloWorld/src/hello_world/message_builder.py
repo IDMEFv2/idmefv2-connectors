@@ -59,7 +59,7 @@ class IDMEFv2MessageBuilder:
         try:
             with open(self.template_path, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except FileNotFoundError:
-            raise FileNotFoundError(f"Template file not found: {self.template_path}")
+        except FileNotFoundError as e:
+            raise FileNotFoundError(f"Template file not found: {self.template_path}") from e
         except json.JSONDecodeError as e:
-            raise json.JSONDecodeError(f"Invalid JSON in template: {e}", e.doc, e.pos)
+            raise json.JSONDecodeError(f"Invalid JSON in template: {e}", e.doc, e.pos) from e
