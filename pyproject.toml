@@ -6,11 +6,13 @@ dependencies = [
     "jsonpath_ng",
     'pyyaml',
     'requests',
+    'jsonschema',
 ]
 requires-python = ">=3.10"
 authors = [
   {name = "François Déchelle"},
   {name = "Emanuele Principato"},
+  {name = "Thierry Bugier"},
 ]
 description = "Various connectors for IDMEF v2"
 readme = "README.md"
