@@ -1,11 +1,12 @@
+#!/usr/bin/env python3
 """IDMEFv2 Hello World Application main entry point."""
 
 import sys
 import traceback
 from typing import List
 
-from .client import IDMEFv2Client
-from .message_builder import IDMEFv2MessageBuilder
+from client import IDMEFv2Client
+from message_builder import IDMEFv2MessageBuilder
 
 
 def main() -> None:

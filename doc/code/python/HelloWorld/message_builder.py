@@ -7,6 +7,7 @@ from typing import Any, Dict
 from uuid import uuid4
 
 
+# pylint: disable=too-few-public-methods
 class IDMEFv2MessageBuilder:
     """Builds IDMEFv2 Hello World messages.
 

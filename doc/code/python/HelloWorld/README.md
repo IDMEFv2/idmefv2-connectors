@@ -61,23 +61,16 @@ HelloWorld/
 
 ### Usage
 
-First, activate the virtual environment:
+First, activate the virtual environment (assuming you're in the HelloWorld directory):
 
 ```bash
-cd doc/code/python/HelloWorld
 source venv/bin/activate
 ```
 
 The application accepts a server URL as a command-line argument:
 
 ```bash
-hello-world http://localhost:8080/api/events
-```
-
-Or run directly with Python:
-
-```bash
-python -m hello_world.app http://localhost:8080/api/events
+python3 ./app.py http://localhost:8888
 ```
 
 ### Examples

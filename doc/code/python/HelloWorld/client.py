@@ -1,6 +1,5 @@
 """HTTP client for sending IDMEFv2 messages."""
 
-from typing import Optional
 import requests
 
 class IDMEFv2Client:
