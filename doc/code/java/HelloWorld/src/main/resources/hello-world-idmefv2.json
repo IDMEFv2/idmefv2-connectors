@@ -1,0 +1,18 @@
+{
+  "Version": "2.D.V07",
+  "ID": "{{UUID}}",
+  "CreateTime": "{{TIMESTAMP}}",
+  "Description": "Hello world",
+  "Type": ["Cyber"],
+  "Category": ["Other.Test"],
+  "Cause": "Normal",
+  "Status": "Event",
+  "Priority": "Info",
+  "Confidence": 1.0,
+  "Analyzer": {
+    "ID": "{{ANALYZER_UUID}}",
+    "Name": "HelloWorld-IDMEFv2-Client",
+    "Model": "1.0.0",
+    "Category": ["ID.UEBA"]
+  }
+}

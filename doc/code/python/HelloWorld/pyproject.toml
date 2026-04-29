@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hello-world-idmefv2"
+version = "1.0.0"
+description = "IDMEFv2 Hello World Python Application"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+authors = [
+    {name = "Example Author", email = "author@example.com"},
+]
+maintainers = [
+    {name = "Example Maintainer", email = "maintainer@example.com"},
+]
+keywords = ["idmefv2", "security", "hello-world"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+]
+dependencies = [
+    "requests>=2.28.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/example/hello-world-idmefv2"
+Documentation = "https://github.com/example/hello-world-idmefv2#readme"
+Repository = "https://github.com/example/hello-world-idmefv2.git"
+Issues = "https://github.com/example/hello-world-idmefv2/issues"
+
+[project.scripts]
+hello-world = "hello_world.app:main"
+
+[tool.setuptools]
+zip-safe = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+hello_world = ["*.json"]
