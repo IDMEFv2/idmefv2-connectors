@@ -5,6 +5,7 @@ This repository contains Python implementations of IDMEFv2 connectors for variou
 - elastalert2 (https://github.com/jertel/elastalert2): see [./idmefv2/connectors/elastalert2](./idmefv2/connectors/elastalert2/#overview)
 - Kismet (https://www.kismetwireless.net/): see [./idmefv2/connectors/kismet](./idmefv2/connectors/kismet/#overview)
 - Modsecurity (https://modsecurity.org/): see [./idmefv2/connectors/modsecurity](./idmefv2/connectors/modsecurity/#overview)
+- Motion (https://motion-project.github.io/): see [./idmefv2/connectors/motion](./idmefv2/connectors/motion/#overview)
 - Prometheus (https://prometheus.io/): see [./idmefv2/connectors/prometheus](./idmefv2/connectors/prometheus/#overview)
 - Samhain (https://www.samhain.de/samhain.html): see [./idmefv2/connectors/samhain](./idmefv2/connectors/samhain/#overview)
 - Suricata NIDS (https://suricata.io/): see [./idmefv2/connectors/suricata](./idmefv2/connectors/suricata/#overview)
