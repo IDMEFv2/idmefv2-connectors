@@ -52,10 +52,10 @@ class MotionPictureSaveConverter(JSONConverter):
     '''
 
     IDMEFV2_TEMPLATE = {
-        'Version': '2.D.V05',
+        'Version': '2.D.V08',
         'ID': idmefv2_uuid,
         'CreateTime': (_fix_motion_date, '$.date'),
-        'Category': ['Intrusion.Burglary'],
+        'Category': ['Access.Unauthorized'],
         'Priority': 'High',
         'Description' : (_make_description, '$.event_name', "$.camera_id"),
         "Analyzer": {
@@ -63,7 +63,7 @@ class MotionPictureSaveConverter(JSONConverter):
             "Name": "motion",
             "Model": "Motion video surveillance system",
             "Category": [
-                "ODC"
+                "PHY.OBJ-DET"
             ],
             "Data": [
                 "Images"
@@ -108,7 +108,7 @@ class MotionCameraLostConverter(JSONConverter):
     '''
 
     IDMEFV2_TEMPLATE = {
-        'Version': '2.D.V05',
+        'Version': '2.D.V08',
         'ID': idmefv2_uuid,
         'CreateTime': (_fix_motion_date, '$.date'),
         'Category': ['Availability.Failure'],
@@ -119,7 +119,7 @@ class MotionCameraLostConverter(JSONConverter):
             "Name": "motion",
             "Model": "Motion video surveillance system",
             "Category": [
-                "ODC"
+                "PHY.OBJ-DET"
             ],
             "Method": [
                 "Integrity"
@@ -157,10 +157,10 @@ class MotionEventStartConverter(JSONConverter):
     '''
 
     IDMEFV2_TEMPLATE = {
-        'Version': '2.D.V05',
+        'Version': '2.D.V08',
         'ID': idmefv2_uuid,
         'CreateTime': (_fix_motion_date, '$.date'),
-        'Category': ['Intrusion.Burglary'],
+        'Category': ['Access.Unauthorized'],
         'Priority': 'High',
         'Description' : (_make_description, '$.event_name', "$.camera_id"),
         "Analyzer": {
@@ -168,7 +168,7 @@ class MotionEventStartConverter(JSONConverter):
             "Name": "motion",
             "Model": "Motion video surveillance system",
             "Category": [
-                "ODC"
+                "PHY.OBJ-DET"
             ],
             "Method": [
                 "Movement"
@@ -206,10 +206,10 @@ class MotionEventEndConverter(JSONConverter):
     '''
 
     IDMEFV2_TEMPLATE = {
-        'Version': '2.D.V05',
+        'Version': '2.D.V08',
         'ID': idmefv2_uuid,
         'CreateTime': (_fix_motion_date, '$.date'),
-        'Category': ['Intrusion.Burglary'],
+        'Category': ['Access.Unauthorized'],
         'Priority': 'High',
         'Description' : (_make_description, '$.event_name', "$.camera_id"),
         "Analyzer": {
@@ -217,7 +217,7 @@ class MotionEventEndConverter(JSONConverter):
             "Name": "motion",
             "Model": "Motion video surveillance system",
             "Category": [
-                "ODC"
+                "PHY.OBJ-DET"
             ],
             "Method": [
                 "Movement"
@@ -248,10 +248,10 @@ class MotionMovieEndConverter(JSONConverter):
     '''
 
     IDMEFV2_TEMPLATE = {
-        'Version': '2.D.V05',
+        'Version': '2.D.V08',
         'ID': idmefv2_uuid,
         'CreateTime': (_fix_motion_date, '$.date'),
-        'Category': ['Intrusion.Burglary'],
+        'Category': ['Access.Unauthorized'],
         'Priority': 'High',
         'Description' : (_make_description, '$.event_name', "$.camera_id"),
         "Analyzer": {
@@ -259,7 +259,7 @@ class MotionMovieEndConverter(JSONConverter):
             "Name": "motion",
             "Model": "Motion video surveillance system",
             "Category": [
-                "ODC"
+                "PHY.OBJ-DET"
             ],
             "Method": [
                 "Movement"
