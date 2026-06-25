@@ -32,10 +32,10 @@ def test_basic_conversion_and_structure():
     anl = msg["Analyzer"]
     assert anl["Name"] == "zabbix"
     assert anl["Model"] == "Zabbix Monitoring"
-    assert anl["Type"] == "Monitor"
+    assert anl["Type"] == ["Availability"]
     assert anl["Category"] == ["NMS"]
-    assert anl["Data"] == ["System"]
-    assert anl["Method"] == ["Polling"]
+    assert anl["Data"] == ["Data"]
+    assert anl["Method"] == ["Monitor"]
 
     # Source section
     src0 = msg["Source"][0]
