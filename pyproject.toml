@@ -46,3 +46,8 @@ include-package-data = true
 'idmefv2.connectors.zabbix' = ["*.sample.conf"]
 
 [tool.setuptools_scm]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]
