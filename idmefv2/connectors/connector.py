@@ -63,17 +63,21 @@ class Connector(abc.ABC):
             a (Union[str,bytes,dict]): the origin alert
         '''
         self.logger.debug("received %s", a)
-        if isinstance(a, (str, bytes)):
-            alert = json.loads(a)
-        else:
-            alert = a
-        (converted, idmefv2_alert) = self.converter.convert(alert)
-        if converted:
-            self.logger.info("sending IDMEFv2 alert %s", str(idmefv2_alert))
-            try:
-                self.idmefv2_client.post(idmefv2_alert)
-            except requests.RequestException as e:
-                self.logger.error('POST failed with error %s', str(e))
+        try:
+            if isinstance(a, (str, bytes)):
+                alert = json.loads(a)
+            else:
+                alert = a
+            (converted, idmefv2_alert) = self.converter.convert(alert)
+            if converted:
+                self.logger.info("sending IDMEFv2 alert %s", str(idmefv2_alert))
+                try:
+                    self.idmefv2_client.post(idmefv2_alert)
+                except requests.RequestException as e:
+                    self.logger.error('POST failed with error %s', str(e))
+        except json.JSONDecodeError as e:
+            self.logger.error('Failed to parse JSON alert: %s', str(e))
+            self.logger.debug('Malformed alert: %s', a)
 
     @abc.abstractmethod
     def run(self):
