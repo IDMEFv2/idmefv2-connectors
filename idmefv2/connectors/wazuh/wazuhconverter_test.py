@@ -4,6 +4,13 @@ Tests for the Wazuh converter
 '''
 
 from .wazuhconverter import WazuhConverter
+import json
+
+from idmefv2.message import Message, SerializedMessage
+
+def _validate_idmefv2_message(message):
+    payload = SerializedMessage("application/json", json.dumps(message).encode("utf-8"))
+    Message.unserialize(payload)
 
 def test_alert_1():
     converter = WazuhConverter()
@@ -24,6 +31,7 @@ def test_alert_4():
     converter = WazuhConverter()
     c, i = converter.convert(WAZUH_ALERT_4)
     assert c
+    _validate_idmefv2_message(i)
     assert i['Priority'] == 'Low'
     assert i['Attachment'][0]['Size'] == 29
 
@@ -31,6 +39,7 @@ def test_alert_5():
     converter = WazuhConverter()
     c, i = converter.convert(WAZUH_ALERT_5)
     assert c
+    _validate_idmefv2_message(i)
     assert i['Priority'] == 'Medium'
     assert i['Attachment'][0]['Hash'][0] == "sha-1:c6ad41de8c6b30de49eb8bd196aebd078d2e3505"
 
@@ -38,6 +47,7 @@ def test_alert_6():
     converter = WazuhConverter()
     c, i = converter.convert(WAZUH_ALERT_6)
     assert c
+    _validate_idmefv2_message(i)
     assert i['Priority'] == 'Medium'
     assert i['Attachment'][0]['Size'] == 58
 
