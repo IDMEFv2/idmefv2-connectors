@@ -3,6 +3,9 @@
 Tests for the Suricata converter
 '''
 from .suricataconverter import SuricataConverter
+import json
+
+from idmefv2.message import Message, SerializedMessage
 
 EVE_ALERT_1 = {
     "timestamp": "2017-04-07T22:24:37.251547+0100",
@@ -144,13 +147,17 @@ EVE_FLOW_1 = {
     }
 }
 
+def _validate_idmefv2_message(message):
+    payload = SerializedMessage("application/json", json.dumps(message).encode("utf-8"))
+    Message.unserialize(payload)
 
 def test_alert_1():
     converter = SuricataConverter()
     c, o = converter.convert(EVE_ALERT_1)
     assert c
     assert isinstance(o, dict)
-    assert o['Version'] == '2.D.V04'
+    _validate_idmefv2_message(o)
+    assert o['Version'] == '2.D.V08'
     assert o['Source'][0]['Protocol'] == ['TCP']
 
 def test_alert_2():
@@ -158,6 +165,7 @@ def test_alert_2():
     c, o = converter.convert(EVE_ALERT_2)
     assert c
     assert isinstance(o, dict)
+    _validate_idmefv2_message(o)
     assert o['Description'] == 'Potentially Bad Traffic'
 
 def test_alert_3():
