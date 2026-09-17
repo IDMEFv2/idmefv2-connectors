@@ -23,9 +23,9 @@ def test_basic_conversion_and_snapshot_attachment(tmp_path):
     converter = ZoneminderConverter()
     converted, out = converter.convert(event)
     assert converted
-    assert out["Version"] == "2.D.V04"
+    assert out["Version"] == "2.D.V08"
     assert out["CreateTime"] == "2026-02-02T12:40:01"
-    assert out["Category"] == ["Intrusion.Burglary"]
+    assert out["Category"] == ["Access.Unauthorized"]
     assert out["Priority"] == "High"
     assert out["Description"] == "Event /event/100 on monitor Camera-1"
     assert out["Attachment"][0]["FileName"] == str(tmp_path)
