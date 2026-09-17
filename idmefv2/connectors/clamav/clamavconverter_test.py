@@ -3,11 +3,19 @@
 Tests for the clamav converter
 '''
 from .clamavconverter import ClamavConverter
+import json
+
+from idmefv2.message import Message, SerializedMessage
+
+def _validate_idmefv2_message(message):
+    payload = SerializedMessage("application/json", json.dumps(message).encode("utf-8"))
+    Message.unserialize(payload)
 
 def test_alert_1():
     converter = ClamavConverter()
     c, i = converter.convert(CLAMAV_ALERT_1)
     assert c
+    _validate_idmefv2_message(i)
     assert i['Priority'] == 'High'
     assert i['Attachment'][0]['Size'] == 6656
     assert i['Attachment'][0]['Hash'][0] == "md5:c6ccf4ddbccbcaa01b441690a329d1b0"
@@ -15,7 +23,9 @@ def test_alert_1():
 
 def test_alert_2():
     converter = ClamavConverter()
-    _, i = converter.convert(CLAMAV_ALERT_2)
+    c, i = converter.convert(CLAMAV_ALERT_2)
+    assert c
+    _validate_idmefv2_message(i)
     assert i['Attachment'][0]['Size'] == 362
     assert i['Attachment'][0]['FileName'] == "clam.7z"
     assert i['Attachment'][0]['Hash'][0] == "md5:30cc73fe9ec56e474c4d19c57ffe0546"

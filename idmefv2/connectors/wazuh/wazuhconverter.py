@@ -47,19 +47,19 @@ class WazuhConverter(JSONConverter):
     '''
 
     IDMEFV2_TEMPLATE = {
-        'Version': '2.D.V04',
+        'Version': '2.D.V08',
         'ID': idmefv2_uuid,
         'CreateTime': (idmefv2_convert_timestamp, '$.timestamp'),
-        'Category': ['Information.UnauthorizedModification'],
+        'Category': ['Access.Compromise'],
         'Priority': (convert_level, '$.rule.level'),
         'Description' : '$.rule.description',
+        "Type": ["Cyber"],
         "Analyzer": {
             "IP": "$.agent.ip",
             "Name": "$.agent.name",
             "Model": "Wazuh",
-            "Type": ["Cyber"],
             "Category": [
-                "HIDS"
+                "END.HIDS"
             ],
             "Data": [
                 "File"

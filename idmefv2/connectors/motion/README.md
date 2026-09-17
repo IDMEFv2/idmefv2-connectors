@@ -50,6 +50,15 @@ The path to the event directory will be automatically added by motion.
 
 The [`picture_save.sh`](./picture_save.sh) script appends to a log file a JSON object containing a subset of event data. This log file will be "tailed" by the IDMEFv2 connector.
 
+
+## Testing
+
+The Motion connector includes unit tests in [motionconverter_test.py](./motionconverter_test.py). Run them from the project root with:
+
+``` sh
+python3 -m pytest idmefv2/connectors/motion/motionconverter_test.py
+```
+
 ## Running
 
 The `idmefv2.connectors.motion` Python module can be run directly. The only mandatory command line argument is the path of the configuration file.

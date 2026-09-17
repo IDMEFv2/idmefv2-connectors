@@ -40,10 +40,10 @@ class ZoneminderConverter(JSONConverter):
     '''
 
     IDMEFV2_TEMPLATE = {
-        'Version': '2.D.V04',
+        'Version': '2.D.V08',
         'ID': idmefv2_uuid,
         'CreateTime': (_fix_zoneminder_date, '$.ET'),
-        'Category': ['Intrusion.Burglary'],
+        'Category': ['Access.Unauthorized'],
         'Priority': 'High',
         'Description' : (_make_description, '$.ED', "$.MN"),
         "Analyzer": {

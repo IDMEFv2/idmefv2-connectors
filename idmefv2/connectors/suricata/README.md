@@ -35,6 +35,14 @@ url = http://127.0.0.1:8888
 config = /etc/suricata/suricata.yaml
 ```
 
+## Testing
+
+The Suricata connector includes unit tests in [suricataconverter_test.py](./suricataconverter_test.py). Run them from the project root with:
+
+``` sh
+python3 -m pytest idmefv2/connectors/suricata/suricataconverter_test.py
+```
+
 ## Running
 
 The `idmefv2.connectors.suricata` Python module can be run directly. The only mandatory command line argument is the path of the configuration file.

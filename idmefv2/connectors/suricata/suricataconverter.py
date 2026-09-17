@@ -56,19 +56,19 @@ class SuricataConverter(JSONConverter):
     '''
 
     IDMEFV2_TEMPLATE = {
-        'Version': '2.D.V04',
+        'Version': '2.D.V08',
         'ID': idmefv2_uuid,
         'CreateTime': (idmefv2_convert_timestamp, '$.timestamp'),
-        'Category': ['Recon.Scanning'],
+        'Category': ['Recon.Network'],
         'Priority': (convert_severity, '$.alert.severity'),
         'Description' : '$.alert.category',
+        "Type": ["Cyber"],
         "Analyzer": {
             "IP": idmefv2_my_local_ip,
             "Name": "suricata",
             "Model": "Suricata NIDS",
-            "Type": "Cyber",
             "Category": [
-                "NIDS"
+                "NET.NIDS"
             ],
             "Data": [
                 "Network"
@@ -79,6 +79,7 @@ class SuricataConverter(JSONConverter):
         },
         'Source': [
             {
+                'ID': idmefv2_uuid,
                 'IP': (fix_ip, '$.src_ip'),
                 'Port': [
                     '$.src_port',
@@ -90,6 +91,7 @@ class SuricataConverter(JSONConverter):
         ],
         'Target': [
             {
+                'ID': idmefv2_uuid,
                 'IP': (fix_ip, '$.dest_ip'),
                 'Port': [
                     '$.dest_port',

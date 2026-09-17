@@ -62,6 +62,14 @@ The path to the event directory will be automatically added by zoneminder.
 
 The [`zm2json.sh`](./zm2json.sh) script appends to a log file a JSON object containing a subset of event data. This log file will be "tailed" by the IDMEFv2 connector.
 
+## Testing
+
+The Zoneminder connector includes unit tests in [zoneminderconverter_test.py](./zoneminderconverter_test.py). Run them from the project root with:
+
+``` sh
+python3 -m pytest idmefv2/connectors/zoneminder/zoneminderconverter_test.py
+```
+
 ## Running
 
 The `idmefv2.connectors.zoneminder` Python module can be run directly. The only mandatory command line argument is the path of the configuration file.

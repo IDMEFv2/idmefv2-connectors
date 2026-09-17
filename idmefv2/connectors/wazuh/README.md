@@ -29,6 +29,14 @@ url = http://testserver.idmefv2:9999
 logfile=/var/ossec/logs/alerts/alerts.json
 ```
 
+## Testing
+
+The Wazuh connector includes unit tests in [wazuhconverter_test.py](./wazuhconverter_test.py). Run them from the project root with:
+
+``` sh
+python3 -m pytest idmefv2/connectors/wazuh/wazuhconverter_test.py
+```
+
 ## Running
 
 The `idmefv2.connectors.wazuh` Python module can be run directly. The only mandatory command line argument is the path of the configuration file.
