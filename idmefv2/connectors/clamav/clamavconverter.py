@@ -35,19 +35,19 @@ class ClamavConverter(JSONConverter):
     '''
 
     IDMEFV2_TEMPLATE = {
-        'Version': '2.D.V04',
+        'Version': '2.D.V08',
         'ID': idmefv2_uuid,
         'CreateTime': _create_time,
-        'Category': ['Malicious.System'],
+        'Category': ['Malware.Other'],
         'Priority': 'High',
         'Description' : 'Virus found',
+        "Type": ["Cyber"],
         "Analyzer": {
             "IP": idmefv2_my_local_ip,
             "Name": "clamav",
             "Model": "Clamav Antivirus",
-            "Type": "Cyber",
             "Category": [
-                "AV"
+                "END.AV"
             ],
             "Data": [
                 "File"
@@ -65,7 +65,6 @@ class ClamavConverter(JSONConverter):
                 ],
                 "Size": (int, "$.FileSize"),
                 "Note": (_viruses, "$"),
-
             },
         ],
     }
