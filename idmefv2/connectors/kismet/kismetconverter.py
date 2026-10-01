@@ -15,8 +15,7 @@ def convert_kismet_timestamp(ts):
             return datetime.datetime.fromtimestamp(ts, tz=datetime.timezone.utc).isoformat()
         # Fallback if it's already a string, try to parse or return as is
         return str(ts)
-    # pylint: disable=broad-exception-caught
-    except Exception:
+    except Exception:  # pylint: disable=broad-exception-caught
         # Default to now if failed
         return datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -49,6 +48,24 @@ def fix_mac(mac):
         return '00:00:00:00:00:00'
     return mac
 
+# Kismet groups every alert definition into one of these classes
+# (see activate_configured_alert() calls in Kismet's own source).
+# Add new classes here as Kismet introduces them.
+_CLASS_CATEGORY = {
+    'PROBE': ['Recon.Network'],
+    'DENIAL': ['Availability.DoS'],
+    'SPOOF': ['Fraud.Masquerade'],
+    'EXPLOIT': ['Access.Unauthorized'],
+    'SYSTEM': ['Other.Undetermined'],
+    'OTHER': ['Other.Undetermined'],
+}
+
+def map_category(alert_class):
+    '''
+    Maps the Kismet alert class to an IDMEFv2 category.
+    '''
+    return _CLASS_CATEGORY.get(str(alert_class).upper(), ['Other.Undetermined'])
+
 class KismetConverter(JSONConverter):
     '''
     A class converting Kismet alerts to IDMEFv2 format.
@@ -56,19 +73,19 @@ class KismetConverter(JSONConverter):
     '''
 
     IDMEFV2_TEMPLATE = {
-        'Version': '2.D.V04',
+        'Version': '2.D.V08',
         'ID': lambda: str(uuid.uuid4()),
         'CreateTime': (convert_kismet_timestamp, '$."kismet.alert.timestamp"'),
-        'Category': ['Recon.Sniffing'],
+        'Type': ['Cyber'],
+        'Category': (map_category, '$."kismet.alert.class"'),
         'Priority': (convert_severity, '$."kismet.alert.severity"'),
-        'Description' : '$."kismet.alert.header"',
+        'Description' : '$."kismet.alert.text"',
         "Analyzer": {
             "IP": idmefv2_my_local_ip,
             "Name": "kismet",
             "Model": "Kismet Wireless IDS",
-            "Type": ["Cyber"],
             "Category": [
-                "NIDS", "WIDS"
+                "NET.NIDS", "NET.WIDS"
             ],
             "Data": [
                 "Network"
@@ -79,8 +96,8 @@ class KismetConverter(JSONConverter):
         },
         'Source': [
             {
-                'Note': (lambda mac, note: f"MAC: {mac} - {note}",
-                         '$."kismet.alert.source_mac"', '$."kismet.alert.text"'),
+                'ID': lambda: str(uuid.uuid4()),
+                'Note': (lambda mac: f"MAC: {mac}", '$."kismet.alert.source_mac"'),
             },
         ],
     }

@@ -71,8 +71,7 @@ class KismetConnector(Connector):
                 for k in keys:
                     val = val[k]
                 return val
-            # pylint: disable=broad-exception-caught
-            except Exception:
+            except Exception:  # pylint: disable=broad-exception-caught
                 return ''
 
         header = get_val(alert, 'kismet.alert.header')
@@ -113,8 +112,7 @@ class KismetConnector(Connector):
                         "Seeded %d existing alerts. They will not be sent.",
                         len(self.seen_alerts)
                     )
-        # pylint: disable=broad-exception-caught
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             self.logger.warning("Failed to seed initial alerts: %s", str(e))
 
         while True:
@@ -145,8 +143,7 @@ class KismetConnector(Connector):
                         response.text
                     )
 
-            # pylint: disable=broad-exception-caught
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 self.logger.error("Polling error: %s", str(e))
 
             time.sleep(self.interval)

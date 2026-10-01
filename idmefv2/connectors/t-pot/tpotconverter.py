@@ -54,6 +54,20 @@ def _generate_description(src: Any) -> str:
 
     return description
 
+# Cowrie and Dionaea capture actual (attempted) authentication, so they are
+# reported as unauthorized access attempts. Honeytrap only observes bare
+# TCP/UDP connections with no credentials involved, which is reconnaissance
+# rather than an access attempt. Add new sensors here as they are supported.
+_SENSOR_CATEGORY = {
+    'cowrie': ['Access.Unauthorized'],
+    'dionaea': ['Access.Unauthorized'],
+    'honeytrap': ['Recon.Network'],
+}
+
+def _map_category(sensor_type: str | None) -> list[str]:
+    """Maps the T-Pot sensor type to an IDMEFv2 category."""
+    return _SENSOR_CATEGORY.get(str(sensor_type).lower(), ['Other.Undetermined'])
+
 class TpotConverter(JSONConverter):
     """
     T-Pot to IDMEFv2 Converter.
@@ -61,28 +75,30 @@ class TpotConverter(JSONConverter):
     """
 
     IDMEFV2_TEMPLATE = {
-        'Version': '2.D.V04',
+        'Version': '2.D.V08',
         'ID': idmefv2_uuid,
         'CreateTime': (_convert_timestamp, '$.@timestamp'),
         'Description': (_generate_description, '$'),
         'Priority': 'Medium',
-        'Category': ['Attempt.Login'],
+        'Type': ['Cyber'],
+        'Category': (_map_category, '$.type'),
         'Analyzer': {
             'IP': idmefv2_my_local_ip,
-            'Name': (lambda x: f"tpot-{x.lower()}" if x else "tpot-unknown", '$.type'), 
-            'Type': ['Cyber'],
+            'Name': (lambda x: f"tpot-{x.lower()}" if x else "tpot-unknown", '$.type'),
             'Method': ['Honeypot']
         },
         'Source': [
             {
+                'ID': idmefv2_uuid,
                 'IP': '$.src_ip',
                 'Port': (lambda x: [int(x)] if x else [], '$.src_port'),
             },
         ],
         'Target': [
             {
+                'ID': idmefv2_uuid,
                 # Field changed from dst_ip to dest_ip to match logstash.conf rename
-                'IP': '$.dest_ip', 
+                'IP': '$.dest_ip',
                 'Port': (lambda x: [int(x)] if x else [], '$.dest_port'),
             },
         ],

@@ -65,14 +65,14 @@ python -m idmefv2.connectors.samhain -c samhain-idmefv2.conf
 
 ## IDMEFv2 Field Mapping
 
+Each Samhain log line has the form `SEVERITY : [TIMESTAMP] key=<value> ...`.
+
 | Samhain Field | IDMEFv2 Field |
 |---------------|---------------|
-| `Severity` | `Priority` |
-| `Timestamp` | `CreateTime` |
-| `msg` / `Policy` | `Description` |
-| `path` | `Target.File.Name` |
-| `size_new` | `Target.File.Size` |
-| `Activity Type` | `Category` |
+| `SEVERITY` prefix | `Priority` (see mapping below) |
+| `TIMESTAMP` | `CreateTime` |
+| `msg=<...>` | `Description`, and `Category` (see mapping below) |
+| `path=<...>`, `size_new=<...>`, `chksum_new=<...>` | `Attachment[0].Content` (as free text, e.g. `"Path: ... | Size: ... | Hash: ..."`), when a `path` is present |
 
 ### Severity Mapping
 
@@ -85,6 +85,21 @@ python -m idmefv2.connectors.samhain -c samhain-idmefv2.conf
 
 ### Category Mapping
 
-- Policy violation (ReadOnly, LogFiles) → `Information.UnauthorizedModification`
-- File modification (checksum change) → `Information.UnauthorizedModification`
-- Other → `Other.Uncategorised`
+Samhain policy events are logged as `msg=<POLICY [Tag] ...>`; the tag identifies which check module raised the event and is mapped as follows:
+
+| Samhain Tag | IDMEFv2 Category |
+|---|---|
+| `SuidCheck` | Access.Escalation |
+| `Process` (hidden/fake pid, missing) | Access.Backdoor |
+| `ServiceNew`, `ServiceRestarted`, `ServicePortSwitch`, `ServiceMissing` | Access.Backdoor |
+| `Kernel` | Access.Compromise |
+| `Mounts` | Sabotage.Tampering |
+| `RegistryKeyMissing`, `RegistryKeyNew`, `RegistryKeyChanged` | Sabotage.Tampering |
+| `Logfile` | Other.Undetermined |
+| `ReadOnly`, `LogFiles`, `GrowingLogFiles`, `Attributes`, `IgnoreAll`, `IgnoreNone` | Sabotage.Tampering |
+| `Prelink` | Access.Compromise |
+| `User0`-`User4` (site-defined policies) | Other.Undetermined |
+| Untagged `POLICY` message (file integrity: missing/added/changed) or checksum change | Sabotage.Tampering |
+| Other | Other.Undetermined |
+
+`ReadOnly`, `LogFiles`, `GrowingLogFiles`, `Attributes`, `IgnoreAll`, `IgnoreNone`, `User0`-`User4` and `Prelink` are Samhain's built-in policy classes, assigned to monitored paths in `samhainrc` (e.g. a `[ReadOnly]` section); they are the classes most real-world deployments actually generate events for, alongside the module-specific tags above.

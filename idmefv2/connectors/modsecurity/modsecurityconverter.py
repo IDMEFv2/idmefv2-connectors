@@ -85,38 +85,43 @@ def convert_severity(severity: str | int) -> str:
     return string_mapping.get(severity_lower, 'Unknown')
 
 
+# Ordered most to least severe: the first matching tag wins.
+_TAG_CATEGORY = {
+    'attack-rce': ['Access.Compromise'],
+    'attack-ssti': ['Access.Compromise'],
+    'attack-injection-generic': ['Access.Compromise'],
+    'attack-injection-java': ['Access.Compromise'],
+    'attack-injection-php': ['Access.Compromise'],
+    'attack-sqli': ['Access.Unauthorized'],
+    'attack-xss': ['Access.Unauthorized'],
+    'attack-lfi': ['Access.Unauthorized'],
+    'attack-rfi': ['Access.Unauthorized'],
+    'attack-fixation': ['Access.Unauthorized'],
+    'attack-ssrf': ['Access.Unauthorized'],
+    'attack-disclosure': ['Theft.Data'],
+    'attack-reputation-scanner': ['Recon.Network'],
+    'attack-protocol': ['Other.Undetermined'],
+    'attack-deprecated-header': ['Other.Undetermined'],
+    'attack-multipart-header': ['Other.Undetermined'],
+    'attack-generic': ['Other.Undetermined'],
+}
+
+
 def map_category(tags: list[str]) -> list[str]:
-    # pylint: disable=too-many-return-statements
     """
-    Map ModSecurity attack tags to IDMEFv2 Categories.
+    Map ModSecurity/CRS attack tags to an IDMEFv2 category.
 
     Args:
-        tags: List of ModSecurity tags from rule
+        tags: List of ModSecurity tags collected across the transaction
 
     Returns:
         List of IDMEFv2 category strings
     """
-    if not tags:
-        return ['Other.Uncategorised']
-
-    # Check for specific attack types
-    # ModSecurity detects attack attempts, so we use Attempt.Exploit
-    for tag in tags:
-        tag_lower = tag.lower()
-        if 'attack-sqli' in tag_lower or 'sql' in tag_lower:
-            return ['Attempt.Exploit']
-        if 'attack-xss' in tag_lower or 'xss' in tag_lower:
-            return ['Attempt.Exploit']
-        if 'attack-rce' in tag_lower or 'rce' in tag_lower:
-            return ['Attempt.Exploit']
-        if 'attack-lfi' in tag_lower or 'attack-rfi' in tag_lower:
-            return ['Attempt.Exploit']
-        if 'attack-injection' in tag_lower:
-            return ['Attempt.Exploit']
-        if 'protocol-violation' in tag_lower or 'protocol' in tag_lower:
-            return ['Attempt.Exploit']
-
-    return ['Other.Uncategorised']
+    tag_set = {tag.lower() for tag in tags}
+    for known_tag, category in _TAG_CATEGORY.items():
+        if known_tag in tag_set:
+            return category
+    return ['Other.Undetermined']
 
 
 def extract_client_ip(transaction: dict[str, Any]) -> str:
@@ -159,6 +164,22 @@ def extract_request_uri(transaction: dict[str, Any]) -> str:
     return request.get('uri', '')
 
 
+def format_request_uri(uri: str) -> str:
+    """
+    Format the request URI as a Target Note.
+
+    "URL" is not a valid Target attribute in the IDMEFv2 schema, so the
+    requested URI is instead recorded as free text in "Note".
+
+    Args:
+        uri: Request URI extracted from the transaction
+
+    Returns:
+        Human-readable note, or empty string if there is no URI
+    """
+    return f"Requested URI: {uri}" if uri else ''
+
+
 def extract_message(messages: list[dict[str, Any]]) -> str:
     """
     Extract primary message from messages array.
@@ -192,18 +213,36 @@ def extract_severity(messages: list[dict[str, Any]]) -> str:
 
 def extract_tags(messages: list[dict[str, Any]]) -> list[str]:
     """
-    Extract tags from first message.
+    Extract the combined, de-duplicated tags from every message in the
+    transaction. A single request can trigger multiple CRS rules (one
+    message per rule), each with its own tags, so restricting this to the
+    first message would silently drop the tags of every other rule match.
 
     Args:
         messages: List of ModSecurity message objects
 
     Returns:
-        List of tags or empty list
+        List of unique tags across all messages, in first-seen order
     """
-    if not messages or len(messages) == 0:
-        return []
-    details = messages[0].get('details', {})
-    return details.get('tags', [])
+    tags: list[str] = []
+    for message in messages or []:
+        for tag in message.get('details', {}).get('tags', []):
+            if tag not in tags:
+                tags.append(tag)
+    return tags
+
+
+def format_alt_category(tags: list[str]) -> list[str]:
+    """
+    Formats the raw ModSecurity/CRS tags as IDMEFv2 AltCategory entries.
+
+    Args:
+        tags: Tags gathered by extract_tags()
+
+    Returns:
+        Tags prefixed with their originating reference ("OWASP-CRS")
+    """
+    return [f"OWASP-CRS:{tag}" for tag in tags]
 
 
 # pylint: disable=too-few-public-methods
@@ -214,22 +253,23 @@ class ModSecurityConverter(JSONConverter):
     """
 
     IDMEFV2_TEMPLATE = {
-        'Version': '2.D.V04',
+        'Version': '2.D.V08',
         'ID': idmefv2_uuid,
         'CreateTime': (convert_modsecurity_timestamp, '$.transaction.time_stamp'),
+        'Type': ["Cyber"],
         'Category': (map_category, (extract_tags, '$.transaction.messages')),
+        'AltCategory': (format_alt_category, (extract_tags, '$.transaction.messages')),
         'Priority': (convert_severity, (extract_severity, '$.transaction.messages')),
         'Description': (extract_message, '$.transaction.messages'),
         "Analyzer": {
             "IP": idmefv2_my_local_ip,
             "Name": "modsecurity",
             "Model": "ModSecurity WAF",
-            "Type": "Cyber",
             "Category": [
-                "WAF"
+                "NET.WAF"
             ],
             "Data": [
-                "Application"
+                "Content"
             ],
             "Method": [
                 "Signature"
@@ -237,13 +277,15 @@ class ModSecurityConverter(JSONConverter):
         },
         'Source': [
             {
+                'ID': idmefv2_uuid,
                 'IP': (extract_client_ip, '$.transaction'),
             },
         ],
         'Target': [
             {
+                'ID': idmefv2_uuid,
                 'IP': (extract_host_ip, '$.transaction'),
-                'URL': (extract_request_uri, '$.transaction'),
+                'Note': (format_request_uri, (extract_request_uri, '$.transaction')),
             },
         ],
     }

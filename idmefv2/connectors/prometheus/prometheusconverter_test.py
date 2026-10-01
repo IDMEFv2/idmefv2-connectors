@@ -21,7 +21,7 @@ def test_basic_conversion_and_mapping():
     converter = PrometheusConverter()
     converted, out = converter.convert(SAMPLE_ALERT)
     assert converted
-    assert out["Version"] == "2.D.V04"
+    assert out["Version"] == "2.D.V08"
     assert out["CreateTime"] == "2018-07-04T20:27:12.606021+02:00"
     assert out["Category"] == ["Availability.Outage"]
     assert out["Priority"] == "High"
@@ -52,4 +52,4 @@ def test_ipv6_instance_hostname_extraction():
     assert converted
     assert out["Source"][0]["Hostname"] == "2001:db8::1"
     assert out["Priority"] == "Medium"
-    assert out["Category"] == ["Other.Uncategorised"]
+    assert out["Category"] == ["Other.Undetermined"]
