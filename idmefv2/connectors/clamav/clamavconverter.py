@@ -13,6 +13,8 @@ def _find_virus(x: any):
         for k, v in x.items():
             if k == 'Viruses':
                 return v
+            if k == 'Alerts':
+                return [alert['Name'] for alert in v if 'Name' in alert]
             r = _find_virus(v)
             if r is not None:
                 return r
@@ -25,7 +27,13 @@ def _find_virus(x: any):
 
 def _viruses(x):
     v = _find_virus(x)
-    return 'Virus found: ' + ', '.join(_find_virus(x)) if v else 'Unknown'
+    return 'Virus found: ' + ', '.join(v) if v else 'Unknown'
+
+def _md5_hash(x):
+    md5 = x.get('md5', x.get('FileMD5'))
+    if md5 is None:
+        raise ValueError('ClamAV metadata is missing md5 and FileMD5')
+    return 'md5:' + md5
 
 # pylint: disable=too-few-public-methods
 class ClamavConverter(JSONConverter):
@@ -61,7 +69,7 @@ class ClamavConverter(JSONConverter):
                 "Name": "virus",
                 "FileName": "$.FileName",
                 "Hash": [
-                    ((lambda h : 'md5:' + h), "$.FileMD5"),
+                    (_md5_hash, "$"),
                 ],
                 "Size": (int, "$.FileSize"),
                 "Note": (_viruses, "$"),

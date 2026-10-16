@@ -31,6 +31,35 @@ def test_alert_2():
     assert i['Attachment'][0]['Hash'][0] == "md5:30cc73fe9ec56e474c4d19c57ffe0546"
     assert i['Attachment'][0]['Note'] == 'Virus found: Clamav.Test.File-6'
 
+def test_alert_with_clamav_metadata_json_fields():
+    converter = ClamavConverter()
+    alert = {
+        "Magic": "CLAMJSONv0",
+        "FileName": "eicar.com",
+        "FilePath": "/tmp/eicar.com",
+        "FileSize": 69,
+        "md5": "69630e4574ec6798239b091cda43dca0",
+        "Alerts": [
+            {
+                "Name": "Eicar-Signature",
+                "Type": "Strong",
+                "Depth": 0,
+                "ObjectID": 0,
+            }
+        ],
+    }
+
+    converted, idmefv2_alert = converter.convert(alert)
+
+    assert converted
+    _validate_idmefv2_message(idmefv2_alert)
+    assert idmefv2_alert['Attachment'][0]['Hash'][0] == (
+        "md5:69630e4574ec6798239b091cda43dca0"
+    )
+    assert idmefv2_alert['Attachment'][0]['Note'] == (
+        'Virus found: Eicar-Signature'
+    )
+
 # pylint: disable=line-too-long
 CLAMAV_ALERT_1 = {
     "Magic": "CLAMJSONv0",
