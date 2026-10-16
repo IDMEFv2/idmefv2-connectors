@@ -42,8 +42,17 @@ class FileTailer:
         i = inotify.adapters.Inotify()
         i.add_watch(self._path, mask=inotify.constants.IN_MODIFY)
 
+        buffer = b''
         with open(self._path, 'rb') as fd:
             fd.seek(0, 2)
             for _ in i.event_gen(yield_nones=False):
-                line = fd.readline().strip()
-                yield line
+                # Read all available data from current position
+                data = fd.read()
+                if data:
+                    buffer += data
+                    # Process complete lines (those ending with newline)
+                    while b'\n' in buffer:
+                        line, buffer = buffer.split(b'\n', 1)
+                        line = line.strip()
+                        if line:  # Only yield non-empty lines
+                            yield line
