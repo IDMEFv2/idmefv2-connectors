@@ -51,7 +51,7 @@ class ZoneminderConverter(JSONConverter):
             "Name": "zoneminder",
             "Model": "Zoneminder video surveillance system",
             "Category": [
-                "ODC"
+                "PHY.OBJ-DET"
             ],
             "Data": [
                 "Images"
