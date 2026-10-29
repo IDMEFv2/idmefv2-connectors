@@ -31,6 +31,68 @@ def test_alert_2():
     assert i['Attachment'][0]['Hash'][0] == "md5:30cc73fe9ec56e474c4d19c57ffe0546"
     assert i['Attachment'][0]['Note'] == 'Virus found: Clamav.Test.File-6'
 
+def test_alert_with_clamav_metadata_json_fields():
+    converter = ClamavConverter()
+    alert = {
+        "Magic": "CLAMJSONv0",
+        "FileName": "eicar.com",
+        "FilePath": "/tmp/eicar.com",
+        "FileSize": 69,
+        "md5": "69630e4574ec6798239b091cda43dca0",
+        "sha2-256": "131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267",
+        "Alerts": [
+            {
+                "Name": "Eicar-Signature",
+                "Type": "Strong",
+                "Depth": 0,
+                "ObjectID": 0,
+            }
+        ],
+    }
+
+    converted, idmefv2_alert = converter.convert(alert)
+
+    assert converted
+    _validate_idmefv2_message(idmefv2_alert)
+    assert idmefv2_alert['Attachment'][0]['Hash'][0] == (
+        "md5:69630e4574ec6798239b091cda43dca0"
+    )
+    assert idmefv2_alert['Attachment'][0]['Hash'][1] == (
+        "sha256:131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267"
+    )
+    assert idmefv2_alert['Attachment'][0]['Note'] == (
+        'Virus found: Eicar-Signature'
+    )
+
+def test_alert_without_md5_omits_hash():
+    alert = {
+        "FileName": "eicar.com",
+        "FileSize": 69,
+        "Alerts": [{"Name": "Eicar-Signature"}],
+    }
+
+    converted, idmefv2_alert = ClamavConverter().convert(alert)
+
+    assert converted
+    _validate_idmefv2_message(idmefv2_alert)
+    assert 'Hash' not in idmefv2_alert['Attachment'][0]
+
+def test_alert_with_sha2_256_but_without_md5():
+    alert = {
+        "FileName": "eicar.com",
+        "FileSize": 69,
+        "sha2-256": "131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267",
+        "Alerts": [{"Name": "Eicar-Signature"}],
+    }
+
+    converted, idmefv2_alert = ClamavConverter().convert(alert)
+
+    assert converted
+    _validate_idmefv2_message(idmefv2_alert)
+    assert idmefv2_alert['Attachment'][0]['Hash'] == [
+        "sha256:131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267"
+    ]
+
 # pylint: disable=line-too-long
 CLAMAV_ALERT_1 = {
     "Magic": "CLAMJSONv0",
