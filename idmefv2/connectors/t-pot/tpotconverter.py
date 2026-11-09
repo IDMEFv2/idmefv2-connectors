@@ -109,10 +109,11 @@ class TpotConverter(JSONConverter):
 
     def filter(self, src: dict[str, Any]) -> bool:
         """
-        CRITICAL FILTER:
-        Ensures compliance with official T-Pot field naming (dest_ip).
+        Discards events missing required fields. A truthy check (not just
+        "is not None") is required because some T-Pot events (e.g. Dionaea's
+        internal "listen" events) carry an empty-string src_ip with no real
+        peer, which would otherwise fail IP format validation downstream.
         """
-        # Changed 'dst_ip' to 'dest_ip' to match official mapping output
         required = ['src_ip', 'dest_ip', 'type', '@timestamp']
 
-        return all(src.get(field) is not None for field in required)
+        return all(src.get(field) for field in required)

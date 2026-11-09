@@ -44,6 +44,16 @@ def test_filter_rejects_missing_required_fields():
     assert converted is False
 
 
+def test_filter_rejects_empty_string_required_fields():
+    # Dionaea's internal "listen" events (e.g. ftpdatalisten) carry an
+    # empty-string src_ip with no real peer, not just a missing key.
+    converter = TpotConverter()
+    event = SAMPLE_EVENT.copy()
+    event["src_ip"] = ""
+    converted, _ = converter.convert(event)
+    assert converted is False
+
+
 def test_dionaea_description_contains_credentials():
     converter = TpotConverter()
     event = {
