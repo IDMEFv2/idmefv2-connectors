@@ -95,8 +95,10 @@ python -m idmefv2.connectors.prometheus -c prometheus-idmefv2.conf
 The connector attempts to categorize alerts based on the alert name:
 
 - Alerts containing "down" or "unreachable" → `Availability.Outage`
-- Alerts containing "cpu", "memory", "disk", "latency" → `Availability.Failure`
-- Other alerts → `Other.Uncategorised`
+- Alerts containing "high" together with "cpu" or "memory" → `Availability.Failure`
+- Alerts containing "disk" or "storage" → `Availability.Failure`
+- Alerts containing "latency" or "slow" → `Availability.Failure`
+- Other alerts → `Other.Undetermined`
 
 ## Example Prometheus Alert Rule
 

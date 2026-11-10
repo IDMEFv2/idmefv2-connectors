@@ -61,3 +61,16 @@ python3 -m idmefv2.connectors.zabbix -c /etc/zabbix-idmefv2.conf
 For detailed instructions on how to configure Zabbix to send alerts to the connector in push mode, including Media Type and Action setup, see (./ZABBIX_WEBHOOK_SETUP_README.md)
 
 In both modes, once an alert is retrieved, the connector will translate it into IDMEFv2 format and send it to the server configured under [idmefv2].
+
+## Alert Lifecycle (Status / PredID)
+
+Zabbix problems have a lifecycle: a problem is created, and later resolved (manually closed, or automatically once the underlying condition clears). The connector tracks this lifecycle and reflects it in IDMEFv2:
+
+- **New problem** → sent with `Status: ["Open"]`.
+- **Resolved problem** (detected via `problem.get`'s `r_eventid`/`r_clock`, populated once Zabbix resolves the event) → the connector sends a further IDMEFv2 message with `Status: ["Closed"]`.
+- Both messages carry a `PredID` pointing to the **previous** IDMEFv2 alert sent for the same Zabbix trigger, chaining the history: `Open (PredID: [])` → `Closed (PredID: [<open alert ID>])` → if the trigger fires again → `Open (PredID: [<closed alert ID>])` → ...
+- Since a resolved problem carries no host/interface info by itself, the `Closed` message **inherits** `Source`/`Target` from the previous alert for that trigger.
+
+This state (last IDMEFv2 alert sent per Zabbix trigger) is kept in a local file, `zabbix_alert_state.json`, next to the connector module - not user-configurable. It is only used to build the chain (`PredID` + inherited `Source`/`Target`); it is not required for the connector to function and can be safely deleted to reset the chain (the next alert for each trigger will simply start a fresh one, with an empty `PredID`).
+
+Applies to both **polling** and **push** modes. In push mode, "Closed" updates are not generated - Zabbix would need to be configured to also push a webhook on problem resolution for that to trigger; this is not covered by [ZABBIX_WEBHOOK_SETUP_README.md](./ZABBIX_WEBHOOK_SETUP_README.md) yet.

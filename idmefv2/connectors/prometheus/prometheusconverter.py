@@ -118,7 +118,7 @@ def _map_category(alertname: str) -> list[str]:
         return ['Availability.Failure']
     if 'latency' in name_lower or 'slow' in name_lower:
         return ['Availability.Failure']
-    return ['Other.Uncategorised']
+    return ['Other.Undetermined']
 
 
 # pylint: disable=too-few-public-methods
@@ -133,9 +133,10 @@ class PrometheusConverter(JSONConverter):
     def __init__(self) -> None:
         """Initialize the converter with the IDMEFv2 template."""
         template: Mapping[str, Any] = {
-            'Version': '2.D.V04',
+            'Version': '2.D.V08',
             'ID': idmefv2_uuid,
             'CreateTime': (_convert_timestamp, '$.activeAt'),
+            'Type': ['Availability'],
             'Category': (_map_category, '$.labels.alertname'),
             'Priority': (_convert_severity, '$.labels.severity'),
             'Description': '$.labels.alertname',
@@ -143,13 +144,13 @@ class PrometheusConverter(JSONConverter):
                 'IP': idmefv2_my_local_ip,
                 'Name': 'prometheus',
                 'Model': 'Prometheus Monitoring',
-                'Type': ['Availability'],
-                'Category': ['NMS'],
+                'Category': ['SIEM.NMS'],
                 'Data': ['Data'],
                 'Method': ['Monitor', 'Threshold'],
             },
             'Source': [
                 {
+                    'ID': idmefv2_uuid,
                     'Hostname': (_extract_hostname, '$.labels.instance'),
                 },
             ],

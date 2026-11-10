@@ -29,14 +29,15 @@ def test_basic_conversion_and_mapping():
     converter = ModSecurityConverter()
     converted, out = converter.convert(SAMPLE_EVENT)
     assert converted
-    assert out["Version"] == "2.D.V04"
+    assert out["Version"] == "2.D.V08"
     assert out["CreateTime"] == "2026-02-02T12:40:01"
-    assert out["Category"] == ["Attempt.Exploit"]
+    assert out["Category"] == ["Access.Unauthorized"]
+    assert out["AltCategory"] == ["OWASP-CRS:application-multi", "OWASP-CRS:attack-sqli"]
     assert out["Priority"] == "High"
     assert out["Description"] == "SQL injection attempt detected"
     assert out["Source"][0]["IP"] == "10.0.0.10"
     assert out["Target"][0]["IP"] == "10.0.0.20"
-    assert out["Target"][0]["URL"] == "/login"
+    assert out["Target"][0]["Note"] == "Requested URI: /login"
 
 
 def test_filter_rejects_missing_messages():
@@ -64,4 +65,4 @@ def test_unknown_severity_and_default_category():
     converted, out = converter.convert(event)
     assert converted
     assert out["Priority"] == "Unknown"
-    assert out["Category"] == ["Other.Uncategorised"]
+    assert out["Category"] == ["Other.Undetermined"]

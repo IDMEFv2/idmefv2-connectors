@@ -46,10 +46,21 @@ The `catch_up` option controls the behaviour on the first polling cycle: when `f
 
 ## Running
 
-The `idmefv2.connectors.tpot` Python module can be run directly. The only mandatory command line argument is the path of the configuration file.
+The `idmefv2.connectors.t-pot` Python module can be run directly. The only mandatory command line argument is the path of the configuration file.
 
 ``` sh
-python3 -m idmefv2.connectors.tpot -c /etc/tpot.conf
+python3 -m idmefv2.connectors.t-pot -c /etc/tpot.conf
 ```
 
 Once the connector is running, it will poll Elasticsearch every `poll_interval` seconds and forward any new honeypot events as IDMEFv2 alerts to the configured server.
+
+## Category Mapping
+
+The `Category` field is derived from the honeypot sensor type (`type` field of the T-Pot/Elasticsearch event):
+
+| Sensor | IDMEFv2 Category | Rationale |
+|---|---|---|
+| `cowrie` | Access.Unauthorized | Captures actual (attempted) authentication |
+| `dionaea` | Access.Unauthorized | Captures actual (attempted) authentication |
+| `honeytrap` | Recon.Network | Observes bare TCP/UDP connections with no credentials involved - reconnaissance rather than an access attempt |
+| Other/unknown sensor | Other.Undetermined | Fallback |

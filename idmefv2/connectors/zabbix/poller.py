@@ -11,7 +11,7 @@ from typing import Any
 
 import requests
 
-from .zabbixconverter import ZabbixConverter
+from .zabbixconverter import ZabbixConverter, ZabbixCloseConverter
 from ..idmefv2client import IDMEFv2Client
 from .models import ZabbixAuth, ZabbixCache, _ZabbixContext
 from .zabbixutil import (
@@ -19,6 +19,8 @@ from .zabbixutil import (
     get_hostid_for_trigger,
     get_iface_for_host,
     resolve_zabbix_server_info,
+    load_alert_state,
+    save_alert_state,
 )
 
 log = logging.getLogger("zabbix-poller")
@@ -40,6 +42,8 @@ class ZabbixPoller:
         self.poll_interval = poll_interval
         self.cache = ZabbixCache()
         self.converter = ZabbixConverter()
+        self.close_converter = ZabbixCloseConverter()
+        self.alert_state = load_alert_state()
 
         server_info = resolve_zabbix_server_info(auth.url)
         server_info.poll_interval = poll_interval
@@ -80,6 +84,31 @@ class ZabbixPoller:
             params,
         )
 
+    def _send_close_alert(self, prob: dict[str, Any], tid: str, eid: str, r_eventid: str) -> None:
+        """
+        Send an IDMEFv2 "Closed" update for a resolved problem, chained via
+        PredID to the last alert sent for this trigger. Source/Target are
+        inherited from that previous alert, since the resolved problem
+        itself carries no host/interface info.
+        """
+        previous = self.alert_state.get(tid, {})
+        close_src = {
+            "name": prob["name"],
+            "severity": prob["severity"],
+            "clock": prob.get("r_clock") or prob["clock"],
+            "pred_id": previous.get("ID"),
+            "source": previous.get("Source", []),
+            "target": previous.get("Target", []),
+        }
+        forward, idmef = self.close_converter.convert(close_src)
+        if forward:
+            self.client.post(idmef)
+            self.alert_state[tid] = idmef
+            save_alert_state(self.alert_state)
+            log.info(
+                "Inviato alert di chiusura per eventid=%s (r_eventid=%s, r_clock=%s)",
+                eid, r_eventid, prob.get("r_clock"),
+            )
 
     def run(self) -> None:
         """
@@ -118,11 +147,16 @@ class ZabbixPoller:
                 )
                 for prob in problems:
                     eid = prob["eventid"]
+                    tid = prob["objectid"]
+
                     if eid in self.cache.seen_eventids:
+                        r_eventid = prob.get("r_eventid", "0")
+                        if r_eventid != "0" and eid not in self.cache.closed_eventids:
+                            self.cache.closed_eventids.add(eid)
+                            self._send_close_alert(prob, tid, eid, r_eventid)
                         continue
                     self.cache.seen_eventids.add(eid)
 
-                    tid = prob["objectid"]
                     hid = get_hostid_for_trigger(
                         self.ctx.session,
                         self.ctx.auth.url,
@@ -146,10 +180,13 @@ class ZabbixPoller:
                         "ip": self.ctx.server_info.ip,
                         "port": self.ctx.server_info.port,
                     }
+                    prob["pred_id"] = self.alert_state.get(tid, {}).get("ID")
 
                     forward, idmef = self.converter.convert(prob)
                     if forward:
                         self.client.post(idmef)
+                        self.alert_state[tid] = idmef
+                        save_alert_state(self.alert_state)
 
                 time.sleep(self.poll_interval)
 

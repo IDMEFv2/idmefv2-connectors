@@ -1,5 +1,9 @@
 misc/
 
+# Zabbix connector runtime state (trigger-id -> last IDMEFv2 alert map)
+idmefv2/connectors/zabbix/zabbix_alert_state.json
+idmefv2/connectors/zabbix/zabbix_alert_state.json.tmp
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

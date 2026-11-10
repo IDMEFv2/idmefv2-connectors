@@ -23,6 +23,8 @@ from .zabbixutil import (
     perform_rpc,
     get_hostid_for_trigger,
     get_iface_for_host,
+    load_alert_state,
+    save_alert_state,
 )
 
 log = logging.getLogger("zabbix-connector")
@@ -44,6 +46,7 @@ class ZabbixPushHelper:
         self.token: Optional[str] = None
         self.cache = ZabbixCache()
         self.server_info = resolve_zabbix_server_info(self.auth.url)
+        self.alert_state = load_alert_state()
 
     def login(self) -> None:
         """Obtain a bearer token from the Zabbix API."""
@@ -169,15 +172,18 @@ class PushHandler(BaseHTTPRequestHandler):
                 src['extra_target'].setdefault('ip', '0.0.0.0')
                 src['extra_target'].setdefault('port', 0)
 
+            src["pred_id"] = self.helper.alert_state.get(tid, {}).get("ID")
+
             ok, msg = self.converter.convert(src)
             if ok:
                 self.client.post(msg)
+                self.helper.alert_state[tid] = msg
+                save_alert_state(self.helper.alert_state)
 
             self.send_response(200)
             self.end_headers()
             self.wfile.write(b"OK")
 
-        # pylint: disable=broad-exception-caught
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             log.exception("Push-handler error")
             self.send_error(500, f"Internal Server Error: {exc}")

@@ -32,11 +32,12 @@ class ZabbixServerInfo:
 class ZabbixCache:
     """
     Internal cache to map triggers to hosts, hosts to interfaces,
-    and to keep track of seen event IDs.
+    and to keep track of seen and closed event IDs.
     """
     trigger_host_map: Dict[str, str] = field(default_factory=dict)
     host_iface_map: Dict[str, Tuple[str, int]] = field(default_factory=dict)
     seen_eventids: Set[str] = field(default_factory=set)
+    closed_eventids: Set[str] = field(default_factory=set)
 
 @dataclass
 class _ZabbixContext:

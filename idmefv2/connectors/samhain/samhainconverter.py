@@ -1,6 +1,6 @@
 """
 The Samhain to IDMEFv2 converter.
-Validated against IDMEF 2.D.V04 schema.
+Validated against IDMEF 2.D.V08 schema.
 """
 from __future__ import annotations
 
@@ -46,18 +46,54 @@ def convert_severity(severity: str) -> str:
     }
     return mapping.get(severity.upper(), 'Unknown')
 
+# Samhain policy events are logged as msg=<POLICY [Tag] ...>. Maps the tag
+# to a category; untagged POLICY messages are file-integrity events.
+_TAG_CATEGORY = {
+    'SuidCheck': ['Access.Escalation'],
+    'Process': ['Access.Backdoor'],
+    'ServiceNew': ['Access.Backdoor'],
+    'ServiceRestarted': ['Access.Backdoor'],
+    'ServicePortSwitch': ['Access.Backdoor'],
+    'ServiceMissing': ['Access.Backdoor'],
+    'Kernel': ['Access.Compromise'],
+    'Mounts': ['Sabotage.Tampering'],
+    'RegistryKeyMissing': ['Sabotage.Tampering'],
+    'RegistryKeyNew': ['Sabotage.Tampering'],
+    'RegistryKeyChanged': ['Sabotage.Tampering'],
+    'Logfile': ['Other.Undetermined'],
+    # Standard Samhain policy classes (file-check severities assigned in
+    # samhainrc, e.g. [ReadOnly] sections) - these are the classes most
+    # real-world deployments actually use for file-integrity monitoring.
+    'ReadOnly': ['Sabotage.Tampering'],
+    'LogFiles': ['Sabotage.Tampering'],
+    'GrowingLogFiles': ['Sabotage.Tampering'],
+    'Attributes': ['Sabotage.Tampering'],
+    'IgnoreAll': ['Sabotage.Tampering'],
+    'IgnoreNone': ['Sabotage.Tampering'],
+    'Prelink': ['Access.Compromise'],
+    'User0': ['Other.Undetermined'],
+    'User1': ['Other.Undetermined'],
+    'User2': ['Other.Undetermined'],
+    'User3': ['Other.Undetermined'],
+    'User4': ['Other.Undetermined'],
+}
+
+_POLICY_TAG_RE = re.compile(r'POLICY\s*\[([A-Za-z]+)\]')
+
 def extract_category(log_data: dict[str, Any]) -> list[str]:
     """
     Maps Samhain msg to categoryEnum.
-    NOTE: Using the space 'Information. UnauthorizedModification' 
-    to match your test server's specific validation error.
     """
-    msg = log_data.get('msg', '').lower()
+    msg = log_data.get('msg', '')
 
-    if 'policy' in msg or ('chksum_old' in log_data and 'chksum_new' in log_data):
-        return ['Information. UnauthorizedModification']
+    tag_match = _POLICY_TAG_RE.search(msg)
+    if tag_match:
+        return _TAG_CATEGORY.get(tag_match.group(1), ['Other.Undetermined'])
 
-    return ['Other.Uncategorised']
+    if 'policy' in msg.lower() or ('chksum_old' in log_data and 'chksum_new' in log_data):
+        return ['Sabotage.Tampering']
+
+    return ['Other.Undetermined']
 
 def generate_attachment(log_data: dict[str, Any]) -> list[dict[str, Any]]:
     """Generates Attachment class. Name follows ^[a-zA-Z0-9]+$ pattern."""
@@ -82,9 +118,10 @@ class SamhainConverter(JSONConverter):
     """Converter for Samhain HIDS to IDMEFv2."""
 
     IDMEFV2_TEMPLATE = {
-        'Version': '2.D.V04',
+        'Version': '2.D.V08',
         'ID': idmefv2_uuid,
         'CreateTime': (convert_samhain_timestamp, '$.timestamp'),
+        'Type': ["Cyber"],
         'Category': (extract_category, '$'),
         'Priority': (convert_severity, '$.severity'),
         'Description': '$.msg',
@@ -92,12 +129,11 @@ class SamhainConverter(JSONConverter):
             "IP": idmefv2_my_local_ip,
             "Name": "samhain-hids",
             "Model": "Samhain HIDS",
-            "Type": ["Cyber"],
-            "Category": ["HIDS"],
+            "Category": ["END.HIDS"],
             "Data": ["File", "Log"],
             "Method": ["Integrity", "Signature"]
         },
-        'Target': [{"IP": idmefv2_my_local_ip}],
+        'Target': [{"ID": idmefv2_uuid, "IP": idmefv2_my_local_ip}],
         'Attachment': (generate_attachment, '$')
     }
 

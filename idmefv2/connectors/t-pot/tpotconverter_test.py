@@ -24,9 +24,9 @@ def test_basic_conversion_and_fields():
     converter = TpotConverter()
     converted, out = converter.convert(SAMPLE_EVENT)
     assert converted
-    assert out["Version"] == "2.D.V04"
+    assert out["Version"] == "2.D.V08"
     assert out["CreateTime"] == "2026-02-02T12:40:01Z"
-    assert out["Category"] == ["Attempt.Login"]
+    assert out["Category"] == ["Access.Unauthorized"]
     assert out["Priority"] == "Medium"
     assert out["Analyzer"]["Name"] == "tpot-cowrie"
     assert out["Source"][0]["IP"] == "192.0.2.10"
@@ -40,6 +40,16 @@ def test_filter_rejects_missing_required_fields():
     converter = TpotConverter()
     event = SAMPLE_EVENT.copy()
     del event["dest_ip"]
+    converted, _ = converter.convert(event)
+    assert converted is False
+
+
+def test_filter_rejects_empty_string_required_fields():
+    # Dionaea's internal "listen" events (e.g. ftpdatalisten) carry an
+    # empty-string src_ip with no real peer, not just a missing key.
+    converter = TpotConverter()
+    event = SAMPLE_EVENT.copy()
+    event["src_ip"] = ""
     converted, _ = converter.convert(event)
     assert converted is False
 

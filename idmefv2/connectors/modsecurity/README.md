@@ -103,8 +103,8 @@ services:
 | `messages[0].details.severity` | `Priority` | Severity level (numeric 0-7, mapped) |
 | `transaction.client_ip` | `Source[0].IP` | Attacker IP address |
 | `transaction.host_ip` | `Target[0].IP` | Target server IP |
-| `transaction.request.uri` | `Target[0].URL` | Attacked URL |
-| `messages[0].details.tags` | `Category` | Attack category (mapped) |
+| `transaction.request.uri` | `Target[0].Note` | Attacked URL (`"URL"` is not a valid `Target` attribute in IDMEFv2, recorded as free text instead) |
+| `messages[*].details.tags` | `Category`, `AltCategory` | Attack category (mapped); tags are collected across **all** messages in the transaction, not just the first |
 
 ### Severity Mapping
 
@@ -123,15 +123,20 @@ ModSecurity uses numeric severity levels (0-7) which are mapped to IDMEFv2 Prior
 
 ### Category Mapping
 
-| ModSecurity Tags | IDMEFv2 Category |
+A single request can trigger multiple CRS rules (one message per rule, each with its own tags); all tags across every message in the transaction are collected before mapping, not just the first message. When several tags are present, the most specific/severe one wins.
+
+| ModSecurity/CRS Tags | IDMEFv2 Category |
 |-----------------|------------------|
-| attack-sqli | Attempt.Exploit |
-| attack-xss | Attempt.Exploit |
-| attack-rce | Attempt.Exploit |
-| attack-lfi, attack-rfi | Attempt.Exploit |
-| attack-injection | Attempt.Exploit |
-| protocol-violation | Attempt.Exploit |
-| (other) | Other.Uncategorised |
+| attack-rce, attack-ssti, attack-injection-generic/-java/-php | Access.Compromise |
+| attack-sqli, attack-xss, attack-lfi, attack-rfi, attack-fixation, attack-ssrf | Access.Unauthorized |
+| attack-disclosure | Theft.Data |
+| attack-reputation-scanner | Recon.Network |
+| attack-protocol, attack-deprecated-header, attack-multipart-header, attack-generic | Other.Undetermined |
+| (unknown/no tags) | Other.Undetermined |
+
+### AltCategory
+
+The complete set of raw CRS tags collected from the transaction (not just the one used to pick `Category`) is also recorded in `AltCategory`, prefixed with their source, e.g. `["OWASP-CRS:attack-sqli", "OWASP-CRS:attack-generic"]`. This preserves the specific rule classification even though `Category` only reflects a single coarse IDMEFv2 bucket.
 
 ## Example
 
@@ -165,30 +170,33 @@ ModSecurity uses numeric severity levels (0-7) which are mapped to IDMEFv2 Prior
 
 ```json
 {
-  "Version": "2.D.V04",
+  "Version": "2.D.V08",
   "ID": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "CreateTime": "2026-01-30T16:00:00.123Z",
-  "Category": ["Attempt.Exploit"],
+  "Type": ["Cyber"],
+  "Category": ["Access.Unauthorized"],
+  "AltCategory": ["OWASP-CRS:attack-sqli"],
   "Priority": "High",
   "Description": "SQL Injection Attack Detected",
   "Analyzer": {
     "IP": "10.0.0.5",
     "Name": "modsecurity",
     "Model": "ModSecurity WAF",
-    "Type": "Cyber",
-    "Category": ["WAF"],
-    "Data": ["Application"],
+    "Category": ["NET.WAF"],
+    "Data": ["Content"],
     "Method": ["Signature"]
   },
   "Source": [
     {
+      "ID": "b2c3d4e5-f6a7-8901-bcde-f21345678901",
       "IP": "192.168.1.100"
     }
   ],
   "Target": [
     {
+      "ID": "c3d4e5f6-a7b8-9012-cdef-321456789012",
       "IP": "10.0.0.5",
-      "URL": "/admin.php?id=1' OR '1'='1"
+      "Note": "Requested URI: /admin.php?id=1' OR '1'='1"
     }
   ]
 }

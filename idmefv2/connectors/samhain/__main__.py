@@ -62,8 +62,7 @@ class SamhainConnector(LogFileConnector):
             self.logger.info("sending IDMEFv2 alert %s", str(idmefv2_alert))
             try:
                 self.idmefv2_client.post(idmefv2_alert)
-            # pylint: disable=broad-exception-caught
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 self.logger.error('POST failed with error %s', str(e))
 
 
